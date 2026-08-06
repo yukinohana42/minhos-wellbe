@@ -8,7 +8,7 @@ const outputRoot = path.join(root, 'public', 'assets', 'infographics', 'web');
 const quality = 90;
 
 const images = [
-  ['hero/hero-team-learning-wide.png', 1600],
+  ['hero/hero-team-learning-wide.png', 1600, 'hero/hero-team-learning-wide-v2.webp'],
   ['problems/problem-visit-uncertainty.png', 900],
   ['problems/problem-manager-consultation-burden.png', 1000],
   ['problems/problem-training-workload.png', 1000],
@@ -49,9 +49,9 @@ let sourceBytes = 0;
 let outputBytes = 0;
 const rows = [];
 
-for (const [relativeSource, maxWidth] of images) {
+for (const [relativeSource, maxWidth, relativeOutputOverride] of images) {
   const source = path.join(sourceRoot, ...relativeSource.split('/'));
-  const relativeOutput = relativeSource.replace(/\.png$/i, '.webp');
+  const relativeOutput = relativeOutputOverride ?? relativeSource.replace(/\.png$/i, '.webp');
   const output = path.join(outputRoot, ...relativeOutput.split('/'));
   await fs.access(source);
   await fs.mkdir(path.dirname(output), { recursive: true });

@@ -34,7 +34,9 @@ const infographicNames = [
   'steps/step-team-learning',
   'steps/step-review-next-proposal'
 ];
-const webPaths = infographicNames.map((name) => `/assets/infographics/web/${name}.webp`);
+const webPaths = infographicNames.map((name) => name === 'hero/hero-team-learning-wide'
+  ? '/assets/infographics/web/hero/hero-team-learning-wide-v2.webp'
+  : `/assets/infographics/web/${name}.webp`);
 const required = [
   'firebase.json', '.firebaserc', 'public/index.html', 'public/css/tokens.css', 'public/css/styles.css',
   'public/js/config.js', 'public/js/app.js', 'public/js/analytics.js',
@@ -183,7 +185,7 @@ for (const tag of imageTags) {
   if (!/\balt="[^"]*"/.test(tag)) fail(`image lacks alt: ${tag.slice(0, 100)}`);
   if (/src="https?:|src="data:/i.test(tag)) fail('page image must be a local external file');
 }
-const heroTag = imageTags.find((tag) => tag.includes('/web/hero/hero-team-learning-wide.webp')) || '';
+const heroTag = imageTags.find((tag) => tag.includes('/web/hero/hero-team-learning-wide-v2.webp')) || '';
 if (!/loading="eager"/.test(heroTag) || !/fetchpriority="high"/.test(heroTag)) fail('Hero LCP image must be eager and high priority');
 if ((html.match(/loading="eager"/g) || []).length !== 1) fail('Hero must be the only eager image');
 for (const tag of imageTags.filter((item) => item !== heroTag && !item.includes('class="site-brand__logo'))) {
