@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://minhos-wellbe-homecare-lecture.web.app/sitemap.xml

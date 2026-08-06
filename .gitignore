@@ -1,0 +1,51 @@
+# Dependencies
+node_modules/
+
+# Firebase local files
+.firebase/
+.firebase-cache/
+firebase-debug.log
+firebase-debug.log.*
+*.log
+
+# Environment and credentials
+.env
+.env.*
+!.env.example
+*service-account*.json
+*serviceAccount*.json
+*google-application-credentials*.json
+*credentials*.json
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Local and OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.tmp
+*.temp
+~$*
+.dropbox.attr
+
+# Editors
+.vscode/
+.idea/
+
+# Generated review output and legacy assets
+artifacts/
+archive/
+
+# Source image packages, references, and ZIPs
+public/assets/infographics/source-package/
+minhos-lp-infographics-20/
+references/
+*.zip
+
+# Private or confidential materials
+private/
+docs/private/
+*CONFIDENTIAL*
+*confidential*

@@ -1,0 +1,21 @@
+no,filename,section,placement
+01,assets/hero/hero-team-learning-wide.png,hero,Hero右側メインビジュアル
+02,assets/problems/problem-visit-uncertainty.png,problems,悩みカード1
+03,assets/problems/problem-manager-consultation-burden.png,problems,悩みカード2
+04,assets/problems/problem-training-workload.png,problems,悩みカード3
+05,assets/value/value-first-three-minutes-checklist.png,value,価値カード1
+06,assets/value/value-consultation-branches.png,value,価値カード2
+07,assets/value/value-sbar-report.png,value,価値カード3
+08,assets/value/value-team-standardization.png,value,価値カード4
+09,assets/theme/theme-edema-observation-wide.png,theme,浮腫テーマ特集カード
+10,assets/final-cta/final-nurse-forward-wide.png,final-cta,最下部CTA左ビジュアル
+11,assets/offer/offer-scenario-90sec.png,offer,提供内容1 90秒シナリオ
+12,assets/offer/offer-mini-lecture.png,offer,提供内容2 最小講義
+13,assets/offer/offer-clinical-dialogue.png,offer,提供内容3 医師×診療看護師の対話
+14,assets/offer/offer-one-sheet.png,offer,提供内容4 現場1枚シート
+15,assets/offer/offer-branch-questions.png,offer,提供内容5 分岐問題
+16,assets/offer/offer-manager-kit.png,offer,提供内容6 管理者実装キット
+17,assets/offer/experience-one-sheet-preview-wide.png,offer,提供内容右側大型プレビュー
+18,assets/steps/step-consultation.png,steps,導入3ステップ1
+19,assets/steps/step-team-learning.png,steps,導入3ステップ2
+20,assets/steps/step-review-next-proposal.png,steps,導入3ステップ3

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://minhos-wellbe-homecare-lecture.web.app/schemas/analytics-event.schema.json",
+  "title": "Minhos Web Analytics Event",
+  "description": "個人情報、患者情報、フォーム入力値、自由記述を含めないイベント仕様",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["event_id", "event_name", "occurred_at", "session_id", "consent_state", "page_path", "page_type", "schema_version"],
+  "properties": {
+    "event_id": {"type": "string", "format": "uuid"},
+    "event_name": {"type": "string", "enum": ["page_view", "hero_impression", "section_view", "cta_impression", "cta_click", "faq_open", "web_error"]},
+    "occurred_at": {"type": "string", "format": "date-time"},
+    "session_id": {"type": "string", "format": "uuid"},
+    "consent_state": {"type": "string", "enum": ["analytics_granted", "analytics_denied", "unknown"]},
+    "page_path": {"type": "string", "pattern": "^/[^?#]*$", "maxLength": 512},
+    "page_type": {"type": "string", "const": "LP"},
+    "content_id": {"$ref": "#/$defs/stableId"},
+    "component_id": {"$ref": "#/$defs/stableId"},
+    "section_id": {"$ref": "#/$defs/stableId"},
+    "cta_id": {"$ref": "#/$defs/stableId"},
+    "form_id": {"$ref": "#/$defs/stableId"},
+    "faq_id": {"$ref": "#/$defs/stableId"},
+    "campaign_id": {"$ref": "#/$defs/stableId"},
+    "variant_id": {"$ref": "#/$defs/stableId"},
+    "placement": {"type": "string", "enum": ["header", "hero", "pricing", "final", "sticky", "other"]},
+    "destination_type": {"type": "string", "enum": ["form"]},
+    "device_category": {"type": "string", "enum": ["mobile", "tablet", "desktop"]},
+    "utm_source": {"$ref": "#/$defs/utmValue"},
+    "utm_medium": {"$ref": "#/$defs/utmValue"},
+    "utm_campaign": {"$ref": "#/$defs/utmValue"},
+    "utm_content": {"$ref": "#/$defs/utmValue"},
+    "referrer_host": {"type": "string", "pattern": "^[A-Za-z0-9.-]+$", "maxLength": 253},
+    "error_code": {"$ref": "#/$defs/stableId"},
+    "schema_version": {"type": "string", "const": "1.0.0"}
+  },
+  "$defs": {
+    "stableId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_:-]{0,99}$", "maxLength": 100},
+    "utmValue": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{0,99}$", "maxLength": 100}
+  }
+}

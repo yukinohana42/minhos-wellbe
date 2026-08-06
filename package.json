@@ -1,0 +1,17 @@
+{
+  "name": "minhos-homecare-edema-lp",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Well be × みんほす！ 訪問看護の浮腫実践レクチャーLP",
+  "scripts": {
+    "serve": "firebase emulators:start --only hosting",
+    "preview": "firebase hosting:channel:deploy edema-lp-preview --expires 7d",
+    "deploy": "firebase deploy --only hosting",
+    "images:infographics": "node scripts/process-infographics.mjs",
+    "validate": "node scripts/validate.mjs"
+  },
+  "devDependencies": {
+    "firebase-tools": "^14.0.0",
+    "sharp": "^0.35.3"
+  }
+}
