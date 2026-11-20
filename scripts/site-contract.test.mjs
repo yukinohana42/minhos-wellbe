@@ -99,20 +99,28 @@ test('input rejects non-dedicated forms, shared links, unknown event IDs and inv
 test('release uses enabled links and approved material only, independently of review quotes', () => {
   const site = actionsForFixture(localSource());
   const draftQuote = { id: 'example-quote', occurrenceId: 'edema-first', quote: '<draft-quote>', approved: false };
+  const approvedQuote = { id: 'approved-quote', occurrenceId: 'edema-first', quote: '公開用の感想', approved: true };
+  const priorDraft = { ...approvedQuote, quote: '<prior-draft>', approved: false };
+  site.voices = [approvedQuote];
   site.hosts.forEach((host) => {
     host.approved = true;
     if (host.photo) site.assets[host.photo].approved = true;
   });
   site.operator = { name: 'テスト運営', contactUrl: 'https://forms.example.test/operation' };
-  const review = renderSite(site, { now: asOf, reviewVoices: [draftQuote] });
+  const review = renderSite(site, { now: asOf, reviewVoices: [draftQuote, priorDraft] });
   assert.match(review.files.get('wellbe/index.html'), /&lt;draft-quote&gt;/);
-  const release = renderSite(site, { mode: 'release', now: asOf, reviewVoices: [draftQuote] });
+  assert.doesNotMatch(review.files.get('wellbe/index.html'), /prior-draft/);
+  const release = renderSite(site, { mode: 'release', now: asOf, reviewVoices: [draftQuote, priorDraft] });
   const index = release.files.get('wellbe/index.html');
+  const study = release.files.get('wellbe/study/index.html');
   assert.match(index, /name="robots" content="index, follow"/);
   assert.match(index, /href="https:\/\/forms\.example\.test\/operation"[^>]*>テスト運営へのお問い合わせ/);
   assert.match(index, /data-cta="wellbe_next_register"[^>]+data-occurrence-id="clinical-reasoning-intro"/);
   assert.equal((index.match(/data-cta="wellbe_consult"/g) || []).length, 3);
-  assert.doesNotMatch(index, /draft-quote/);
+  for (const page of [index, study]) {
+    assert.match(page, /<blockquote[^>]*><p>公開用の感想<\/p><\/blockquote>/);
+    assert.doesNotMatch(page, /draft-quote|prior-draft/);
+  }
   assert.doesNotMatch(index, /^[ \t]+$/m);
   assert.match(release.files.get('wellbe/sitemap.xml'), /https:\/\/minhos-management.jp\/wellbe\//);
   const tracked = structuredClone(site);
