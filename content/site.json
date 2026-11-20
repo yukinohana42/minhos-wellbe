@@ -3,7 +3,8 @@
   "basePath": "/wellbe/",
   "serviceId": "wellbe_homecare",
   "confirmedOn": "2026-11-20",
-  "title": "訪問看護の勉強会と新人教育｜Well be × みんほす！",
+  "title": "訪問看護ステーションの新人教育・導入相談｜Well be × みんほす！",
+  "metaDescription": "訪問看護ステーションの管理者・教育担当者向け。新人が学ぶ順番や、訪問後に先輩と振り返る方法を事業所ごとに相談できます。訪問看護の事例を扱う無料のオンライン勉強会も開催しています。",
   "heading": [
     "訪問先の「いつもと違う」を",
     "自分で判断できるようになって",
@@ -37,7 +38,7 @@
   "education": {
     "status": "planned",
     "title": "新人教育を、事業所に合わせて。",
-    "description": "新人が何から学び、先輩とどう振り返るか。新入職者向けの教育セットを準備しています。事業所ごとの育成についても、導入相談でお話しいただけます。",
+    "description": "訪問看護ステーションの管理者・教育担当の方へ。新人が学ぶ順番や、訪問後に先輩と振り返る方法を、事業所ごとに相談できます。新入職者向けの教育セットは準備中です。",
     "materialAsset": null
   },
   "occurrences": [
@@ -147,6 +148,42 @@
       },
       "approved": true,
       "alt": "新入職の看護師がノートを開き、先輩と訪問を振り返っている。"
+    },
+    "study-home-visit": {
+      "src": "study/assets/home-visit-1536.webp",
+      "width": 1536,
+      "height": 1024,
+      "small": {
+        "src": "study/assets/home-visit-768.webp",
+        "width": 768,
+        "height": 512
+      },
+      "approved": true,
+      "alt": "自宅を訪ねた看護師が患者さんの話を聞き、隣のご家族も穏やかな表情で会話に加わる。"
+    },
+    "study-online": {
+      "src": "study/assets/online-study-1536.webp",
+      "width": 1536,
+      "height": 1024,
+      "small": {
+        "src": "study/assets/online-study-768.webp",
+        "width": 768,
+        "height": 512
+      },
+      "approved": true,
+      "alt": "看護師がパソコンで勉強会に参加し、講師の話を聞きながらノートを取る。"
+    },
+    "study-phone-report": {
+      "src": "study/assets/phone-report-1536.webp",
+      "width": 1536,
+      "height": 1024,
+      "small": {
+        "src": "study/assets/phone-report-768.webp",
+        "width": 768,
+        "height": 512
+      },
+      "approved": true,
+      "alt": "訪問後、看護師がメモを見ながら電話で報告する。"
     },
     "ito": {
       "src": "assets/photos/creator-ito-kenta.webp",

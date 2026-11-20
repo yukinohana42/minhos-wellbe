@@ -55,6 +55,11 @@
       "minLength": 1,
       "maxLength": 220
     },
+    "metaDescription": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 220
+    },
     "freeNotice": {
       "type": "string",
       "minLength": 1,
@@ -320,7 +325,7 @@
     },
     "imagePath": {
       "type": "string",
-      "pattern": "^assets/(?:[a-z0-9_-]+/)*[a-z0-9_-]+\\.(?:png|jpg|webp)$"
+      "pattern": "^(?:study/)?assets/(?:[a-z0-9_-]+/)*[a-z0-9_-]+\\.(?:png|jpg|webp)$"
     },
     "pixels": {
       "type": "integer",

@@ -36,7 +36,7 @@ const server = http.createServer((request, response) => {
       response.writeHead(404).end();
       return;
     }
-    const file = safePath(publicRoot, pathname.slice(1) + (pathname === basePath ? 'index.html' : ''));
+    const file = safePath(publicRoot, pathname.slice(1) + (pathname.endsWith('/') ? 'index.html' : ''));
     const contentType = types[path.extname(file)];
     const stat = fs.statSync(file, { throwIfNoEntry: false });
     if (!contentType || !stat?.isFile()) {

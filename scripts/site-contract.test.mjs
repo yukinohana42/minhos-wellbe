@@ -23,6 +23,11 @@ test('JST selects the next public scheduled session and keeps a date-only past s
   assert.match(onDay, /本日の勉強会/);
   assert.match(onDay, /datetime="2026-12-23T21:00:00\+09:00"/);
   assert.match(onDay, /datetime="2026-10-15"/);
+  const study = renderSite(actionsForFixture(site), { now: startOfEventDay }).files.get('wellbe/study/index.html');
+  assert.match(study, /data-next-heading>本日の勉強会/);
+  assert.match(study, /datetime="2026-12-23T21:00:00\+09:00"/);
+  assert.equal([...study.matchAll(/data-cta="wellbe_study_next_register" data-cta-loc="([^"]+)"/g)].map((match) => match[1]).join(','), 'hero,guide');
+  assert.doesNotMatch(study, /data-cta="wellbe_consult"/);
 });
 
 test('an elapsed scheduled session stays out of history and registration', () => {
@@ -31,16 +36,23 @@ test('an elapsed scheduled session stays out of history and registration', () =>
   assert.equal(today, '2026-12-24');
   assert.equal(next, undefined);
   assert.deepEqual(held.map((item) => item.id), ['edema-first']);
-  const output = renderSite(site, { now: endOfEventDay }).files.get('wellbe/index.html');
+  const { files } = renderSite(site, { now: endOfEventDay });
+  const output = files.get('wellbe/index.html');
   assert.match(output, /次回の開催は決まり次第ご案内します/);
   assert.doesNotMatch(output, /data-cta="wellbe_next_register"/);
   assert.doesNotMatch(output, /臨床推論入門/);
+  const study = files.get('wellbe/study/index.html');
+  assert.match(study, /次回の開催は決まり次第ご案内します/);
+  assert.doesNotMatch(study, /data-cta="wellbe_study_next_register"|臨床推論入門/);
 });
 
 test('postponed, cancelled and private events never become the next event', () => {
   const site = actionsForFixture(localSource());
   const next = sessionsAt(site, asOf).next;
   next.status = 'postponed';
+  const study = renderSite(site, { now: asOf }).files.get('wellbe/study/index.html');
+  assert.match(study, /の開催は延期となりました。/);
+  assert.doesNotMatch(study, /data-cta="wellbe_study_next_register"/);
   site.occurrences.push(
     { ...next, id: 'cancelled', status: 'cancelled' },
     { ...next, id: 'private', status: 'scheduled', public: false },
