@@ -129,6 +129,11 @@ a, button, summary { -webkit-tap-highlight-color: #3253a426; }
   box-shadow: .5rem .55rem 0 var(--blue);
 }
 .hero-figure img { inline-size: 100%; }
+.hero-figure figcaption {
+  padding: .45rem .75rem;
+  color: var(--muted);
+  font-size: .8125rem;
+}
 
 .action-link, .action-status {
   inline-size: fit-content;

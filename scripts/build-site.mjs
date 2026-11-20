@@ -236,6 +236,14 @@ export function renderSite(site, { mode = 'review', now = new Date(), reviewVoic
     return '<img' + (className ? ' class="' + className + '"' : '') + ' src="' + src + '"' + responsive +
       ' width="' + asset.width + '" height="' + asset.height + '" alt="' + html(alt ?? asset.alt) + '" decoding="async"' + loading + '>';
   }
+  function heroImage(artworkId, photoId, sizes, caption) {
+    if (!site.assets[photoId]?.approved) return image(artworkId, { priority: true, sizes });
+    const artwork = site.assets[artworkId];
+    // Publish the artwork used by Open Graph and its existing responsive variant.
+    assetSource(artwork, artwork.sha256);
+    if (artwork.small) assetSource(artwork.small);
+    return image(photoId, { priority: true, sizes }) + '<figcaption>' + html(caption) + '</figcaption>';
+  }
   const brand = (where, href = basePath) => '<a class="brand" href="' + href + '" aria-label="Well be × みんほす！ サービス紹介">' +
     image('wellbe-logo', { className: 'brand-wellbe', brandImage: where === 'header' }) +
     '<span class="brand-times" aria-hidden="true">×</span>' +
@@ -267,7 +275,9 @@ export function renderSite(site, { mode = 'review', now = new Date(), reviewVoic
     HEADING: site.heading.map((line) => '<span>' + html(line) + '</span>').join('\n          '),
     DESCRIPTION: leadLines.map(html).join('<br>\n'),
     CONSULT_HERO: actions(site, 'consultation', 'hero'),
-    HERO_IMAGE: image('team-live', { priority: true, sizes: '(min-width: 1276px) 670px, (min-width: 860px) 54vw, (min-width: 700px) 44vw, calc(100vw - 40px)' }),
+    HERO_IMAGE: heroImage('team-live', 'wellbe-staff-photo',
+      '(min-width: 1276px) 670px, (min-width: 860px) 54vw, (min-width: 700px) 44vw, calc(100vw - 40px)',
+      'Well beの事業所で、画面を確認するスタッフ'),
     NEXT_SESSION: nextSession(site, sessions),
     HOME_IMAGE: image('home-listening', { sizes: '(min-width: 1276px) 630px, (min-width: 700px) 49vw, calc(100vw - 40px)' }),
     REPORT_IMAGE: image('physician-report', { sizes: '(min-width: 1276px) 510px, (min-width: 700px) 43vw, calc(100vw - 40px)' }),
@@ -293,7 +303,9 @@ export function renderSite(site, { mode = 'review', now = new Date(), reviewVoic
     BRAND: brand('header', studyPath),
     FOOTER: footer(site, brand('footer', studyPath), sessions.today.slice(0, 4),
       '<a class="study-business-link" href="' + basePath + '">訪問看護ステーションの新人教育・導入相談</a>'),
-    HERO_IMAGE: image('study-home-visit', { priority: true, sizes: '(min-width: 1380px) 650px, (min-width: 900px) 48vw, calc(100vw - 36px)' }),
+    HERO_IMAGE: heroImage('study-home-visit', 'wellbe-visit-photo',
+      '(min-width: 1380px) 650px, (min-width: 900px) 48vw, calc(100vw - 36px)',
+      'Well beの訪問看護のひとコマ'),
     ONLINE_IMAGE: image('study-online', { sizes: '(min-width: 1380px) 640px, (min-width: 900px) 49vw, calc(100vw - 36px)' }),
     REPORT_IMAGE: image('study-phone-report', { sizes: '(min-width: 1380px) 470px, (min-width: 900px) 36vw, 72vw' }),
     REGISTER_HERO: actions(site, 'registration', 'hero', sessions.next, true),

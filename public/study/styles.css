@@ -184,6 +184,12 @@
   inline-size: 100%;
 }
 
+.study-hero-art figcaption {
+  margin-block-start: .45rem;
+  color: var(--muted);
+  font-size: .8125rem;
+}
+
 .study-next {
   background: var(--study-band);
   color: var(--white);
