@@ -1,102 +1,36 @@
-# Well be × みんほす！｜訪問看護・浮腫実践レクチャーLP
+# Well be × みんほす！ 訪問看護教育サービス
 
-訪問看護ステーション向けに、訪問時の観察・相談・報告をチームでそろえる実践レクチャーのランディングページです。HTML、CSS、Vanilla JavaScriptで構成し、Firebase HostingのPreview Channelで確認します。
-
-今季最初の医学テーマは「浮腫」です。訪問先で「いつもと違う」に出会った際の観察・相談・報告を、訪問看護チームの共通言語にすることを目的としています。
-
-## 現在の公開先
-
-- Firebase Project ID: `minhos-wellbe-homecare-lecture`
-- Preview Channel: `edema-lp-preview`
-- Preview URL: `https://minhos-wellbe-homecare-lecture--edema-lp-preview-h7ehvj2e.web.app/`
-- 本番予定URL: `https://minhos-wellbe-homecare-lecture.web.app/`
-
-本番公開は、Previewの目視確認と明示承認を得るまで実行しません。別のFirebaseプロジェクトやHosting targetには接続しません。
-
-## 現在の公開準備状態
-
-- GA4 Measurement ID: 未設定（Googleタグは読み込みません）
-- 導入相談フォームURL: 未設定（CTAは準備中表示になります）
-- 医学レビュー: 最終確認待ち
-- Creator写真のWeb公開利用許諾: 最終確認待ち
-- 法務情報: 販売主体、問い合わせ、支払・キャンセル条件の確定待ち
-
-## 構成
-
-- `public/index.html`: LP本体
-- `public/css/tokens.css`: デザイントークン
-- `public/css/styles.css`: レスポンシブレイアウト
-- `public/js/config.js`: 公開用の任意設定
-- `public/js/app.js`: ナビゲーション、FAQ、CTA、固定CTA
-- `public/js/analytics.js`: 同意後のみ動作する匿名アクセス解析
-- `public/assets/infographics/source-package/`: ローカル専用の生成元PNGと配置ガイド（GitHub・Hostingとも対象外）
-- `public/assets/infographics/web/`: HTMLから参照する最適化済みWebP
-- `public/assets/photos/`: Creator写真とOGP
-- `docs/infographics/`: 配置ガイドと配置マップの参照用コピー
-- `scripts/process-infographics.mjs`: PNGからWebPを再生成する画像処理
-- `scripts/validate.mjs`: 公開前の自動検証
-- `artifacts/visual-review/`: 表示幅別の目視確認画像
-- `archive/legacy-public-assets/`: 公開対象から退避した旧素材
-
-## 未確定の設定
-
-`public/js/config.js` の次の値は、確定するまで空文字のままにします。
-
-- `applicationUrl`: 導入相談フォームURL
-- `minhosHomeUrl`: みんほす！公式ホームページURL
-- `ga4MeasurementId`: GA4 Measurement ID
-- `firstPartyAnalyticsEndpoint`: 承認済みの計測エンドポイント
-
-値を推測して入力しないでください。`applicationUrl` が空の場合、CTAは外部へ遷移せず「導入相談フォームは現在準備中です。」と表示します。GA4 IDが空の場合、Googleタグは読み込まれません。
+訪問看護ステーションの新人教育と、訪問時の観察・医師への報告を支える常設LPです。管理者の導入相談と、看護師のオンライン勉強会への個人参加登録を案内します。
 
 ## ローカル確認
 
-```powershell
-npm install
-npm run validate
-npm run serve
-```
-
-Firebase Hosting Emulatorは通常 `http://127.0.0.1:5000/` で起動します。
-
-PowerShellの実行ポリシーにより`npm.ps1`を実行できない環境では、`npm.cmd install`、`npm.cmd run validate`、`npm.cmd run serve`を使用してください。
-
-## Infographic画像の更新
-
-元画像は、Git管理外の `public/assets/infographics/source-package/assets/` の既存カテゴリへPNG形式で追加し、`scripts/process-infographics.mjs` の一覧へファイル名と最大幅を登録します。次に `npm.cmd run images:infographics` を実行し、`public/assets/infographics/web/` に生成されたWebPの実寸をHTMLの `width` / `height` と同期してください。画像を追加・差し替えた後は `npm.cmd run validate` と各表示幅での目視確認を行います。
-
-`source-package`は高解像度の編集用元データを含むため、GitHubにもFirebase Hostingにも含めません。`firebase.json`と`.gitignore`の除外は削除しないでください。伊藤健大・永井友基のCreator写真は `public/assets/photos/` で別管理する既存実写で、infographic画像処理の対象外です。
-
-## Preview更新
+Node `22.23.4` と npm `10.9.8` を使います。WindowsのHP専用環境では、HPルートから版を確認し、同じ入口でWell beのコマンドを実行します。
 
 ```powershell
-firebase hosting:channel:deploy edema-lp-preview `
-  --expires 7d `
-  --project minhos-wellbe-homecare-lecture
+.\tools\npm-hp.cmd --version
+.\tools\npm-hp.cmd exec --offline -c "node --version"
+.\tools\npm-hp.cmd exec --offline -c "node -p process.execPath"
+.\tools\npm-hp.cmd --prefix .tmp/workspaces/minhos-wellbe ci
+.\tools\npm-hp.cmd --prefix .tmp/workspaces/minhos-wellbe run validate
+.\tools\npm-hp.cmd --prefix .tmp/workspaces/minhos-wellbe run preview:local
 ```
 
-## 本番公開ゲート
+CIなど別環境はWell be repoルートで `npm ci`、`npm run validate`、必要に応じて `npm run preview:local` を実行します。確認版は `.tmp/site/public/wellbe/` に生成します。プレビューは127.0.0.1の、表示されたポートと `/wellbe/` を使用します。`build:site` で現在の入力から確認版を生成できます。
 
-次のすべてを満たし、明示承認を得た後だけ本番公開します。
+## 内容の更新
 
-1. 導入相談フォームURLが確定している
-2. 運営者・問い合わせ・支払・キャンセル条件の法務情報が確定している
-3. 浮腫テーマの医学レビューが完了している
-4. Creator写真のWeb公開利用許諾が確認できている
-5. PreviewのPC・スマートフォン目視確認が完了している
-6. `npm run validate` と公開プレースホルダー検索が合格している
+[SOURCE-OF-TRUTH.md](SOURCE-OF-TRUTH.md) を起点に、[公開コンテンツ](content/site.json) の開催回、二つの受付、運営者、画像の承認状態を更新します。相談と登録には専用HTTPS URLと有効状態を設定します。参加登録には対象開催IDも必要です。次回は予定回から選び、開催翌日は再ビルドします。開催済みへの切替は運営担当が確認して行います。
 
-本番デプロイコマンドは次のとおりですが、法務・医学・フォーム・写真利用許諾・人間の目視承認が完了し、ユーザーが明示承認した後だけ実行します。
+掲載確認中の抜粋をローカルで見る場合は、`.tmp/content/review-voices.json` にschemaの `voice` と同じ形で、`approved: false` の配列を置きます。公開が決まった抜粋は、対象回と文面を確認して正本へ移します。
 
-```powershell
-firebase deploy --only hosting `
-  --project minhos-wellbe-homecare-lecture
-```
+運営名義は `operator.name` に設定します。一般のお問い合わせが準備中の場合は `operator.contactUrl` に `null` を設定します。運営名義はフッターに、問い合わせの案内はFAQと利用案内に表示します。
 
-## GitHub運用とセキュリティ
+## HPへの引き渡し
 
-このPublicリポジトリへ、秘密情報、FirebaseやGoogleの認証情報、患者情報、フォーム実データ、契約・請求・税務資料を追加しないでください。`node_modules/`、`archive/`、`artifacts/`、ZIP、参照スクリーンショット、高解像度`source-package`もGit管理外です。
+`npm run validate:release` は正規URL・二つの受付・運営者・主催者と写真・掲載対象素材の状態を検証します。確定したコミットの作業ツリーで `npm run export:hp` を実行すると、`.tmp/hp-export/public/wellbe/` と公開ルート外の `manifest.json` を生成します。レビュー用の `npm run export:hp -- --review` は `.tmp/hp-review-export/` に、noindexの別パッケージを作ります。
 
-初回基準版以降は、変更ごとに`codex/<task-name>`ブランチを作り、検証済みのPull Requestを経て`main`へマージします。GitHub Actionsは`npm run validate`だけを実行し、Firebaseへはデプロイしません。詳細は [`docs/GIT_WORKFLOW.md`](docs/GIT_WORKFLOW.md) を参照してください。
+HP側で未使用の `/wellbe/` を確認し、独立した作業場でmanifestのSHAとファイルハッシュを照合して取り込みます。公開候補ではHPのサイトマップへ正規URLを加え、HP全体の関連検証、CI、許可された公開手順を通します。問題があれば直前のmanifestと統合前のHPコミットをもとにWell be関連の差分を戻します。
 
-計測仕様は `docs/measurement-plan.md`、ページ要件は `docs/page-brief.md`、公開確認は `docs/deploy-checklist.md` を参照してください。
+`serve` と `preview` はローカル確認に使います。`deploy` はHPへの引き渡し方法を表示します。以前の浮腫LPとそのFirebase設定は参照用です。
+
+[デザイン](DESIGN.md) ／ [計測・データ](database.md) ／ [作業ルール](AGENTS.md)

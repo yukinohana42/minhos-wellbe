@@ -1,209 +1,174 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { createHash } from 'node:crypto';
+import { pathToFileURL } from 'node:url';
 import sharp from 'sharp';
+import { buildSite, legalPages } from './build-site.mjs';
+import { root, sessionsAt, actionHref, publicHttps } from './site-content.mjs';
 
-const root = path.resolve(import.meta.dirname, '..');
-const publicRoot = path.join(root, 'public');
-const infographicRoot = path.join(publicRoot, 'assets', 'infographics');
-const sourceAssetRoot = path.join(infographicRoot, 'source-package', 'assets');
-const webAssetRoot = path.join(infographicRoot, 'web');
-const productionOrigin = 'https://minhos-wellbe-homecare-lecture.web.app/';
-const ctaLabel = '浮腫レクチャーの導入を相談する';
-
-const infographicNames = [
-  'hero/hero-team-learning-wide',
-  'problems/problem-visit-uncertainty',
-  'problems/problem-manager-consultation-burden',
-  'problems/problem-training-workload',
-  'value/value-first-three-minutes-checklist',
-  'value/value-consultation-branches',
-  'value/value-sbar-report',
-  'value/value-team-standardization',
-  'theme/theme-edema-observation-wide',
-  'final-cta/final-nurse-forward-wide',
-  'offer/offer-scenario-90sec',
-  'offer/offer-mini-lecture',
-  'offer/offer-clinical-dialogue',
-  'offer/offer-one-sheet',
-  'offer/offer-branch-questions',
-  'offer/offer-manager-kit',
-  'offer/experience-one-sheet-preview-wide',
-  'steps/step-consultation',
-  'steps/step-team-learning',
-  'steps/step-review-next-proposal'
-];
-const webPaths = infographicNames.map((name) => `/assets/infographics/web/${name}.webp`);
-const required = [
-  'firebase.json', '.firebaserc', 'public/index.html', 'public/css/tokens.css', 'public/css/styles.css',
-  'public/js/config.js', 'public/js/app.js', 'public/js/analytics.js',
-  'public/assets/logo/minhos-logo.png',
-  'public/assets/logo/wellbe-official-logo.jpg',
-  'public/assets/photos/creator-ito-kenta.webp', 'public/assets/photos/creator-nagai-yuki.webp',
-  'public/assets/photos/ogp-edema-program.png',
-  'public/assets/infographics/web/target/target-office-team-meeting-wide.png',
-  'docs/infographics/PLACEMENT_GUIDE.md', 'docs/infographics/placement-map.csv',
-  ...webPaths.map((asset) => `public${asset}`)
+const imageFormats = { '.webp': 'webp', '.png': 'png', '.jpg': 'jpeg' };
+const outputTypes = new Set(['.html', '.js', '.css', '.png', '.jpg', '.webp', '.svg', '.xml']);
+const patterns = [
+  [/poc|共同開発パートナー|REPLACE_ME|REPLACE_WITH|example\.(?:com|test)|localhost/i, 'placeholder or internal wording'],
+  [/data:image|base64|\/source-package\/|BEGIN [A-Z ]*PRIVATE KEY|client_secret|service_account/, 'private or embedded data'],
+  [/minhos-wellbe-homecare-lecture\.web\.app|ogp-edema-program|console\.log/, 'legacy hosting or debug content']
 ];
 
-let failures = 0;
-const fail = (message) => { console.error(`FAIL: ${message}`); failures += 1; };
-for (const file of required) if (!fs.existsSync(path.join(root, file))) fail(`missing ${file}`);
+const attr = (tag, name) => tag.match(new RegExp('\\s' + name + '="([^"]*)"'))?.[1];
+const tags = (source, names) => [...source.matchAll(new RegExp('<(?:' + names + ')\\b[^>]*>', 'gi'))].map(([tag]) => tag);
 
-const walk = (directory) => fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
-  const absolute = path.join(directory, entry.name);
-  return entry.isDirectory() ? walk(absolute) : [absolute];
-});
-const publicFiles = walk(publicRoot);
-const hasLocalSourcePackage = fs.existsSync(sourceAssetRoot);
-const sourcePngs = hasLocalSourcePackage ? walk(sourceAssetRoot).filter((file) => path.extname(file).toLowerCase() === '.png') : [];
-const webWebps = walk(webAssetRoot).filter((file) => path.extname(file).toLowerCase() === '.webp');
-if (hasLocalSourcePackage && sourcePngs.length !== 20) fail(`expected 20 local source PNGs, found ${sourcePngs.length}`);
-if (webWebps.length !== 20) fail(`expected 20 WebPs, found ${webWebps.length}`);
+export async function validateOutput({ site, files, mode, now }) {
+  const issues = [];
+  const check = (truth, note) => { if (!truth) issues.push(note); };
+  const names = ['index.html', ...Object.keys(legalPages)];
+  const emitted = new Set();
+  const assetInfo = new Map(Object.values(site.assets)
+    .flatMap((asset) => [asset, asset.small].filter(Boolean)).map((asset) => [site.basePath.slice(1) + asset.src, asset]));
+  const imageSizes = new Map();
+  const { next } = sessionsAt(site, now);
+  const assetPrefix = site.basePath.slice(1);
+  const publicUrl = site.origin + site.basePath;
+  const forward = name => site.basePath + name;
+  const configuredActions = Object.values(site.actions).filter((action) => action.enabled).map(({ url }) => publicHttps(url, site.origin));
 
-const targetImage = path.join(webAssetRoot, 'target', 'target-office-team-meeting-wide.png');
-const wellbeLogo = path.join(publicRoot, 'assets', 'logo', 'wellbe-official-logo.jpg');
-try {
-  const metadata = await sharp(targetImage).metadata();
-  if (metadata.format !== 'png' || metadata.width !== 1672 || metadata.height !== 941) fail('target office image must be the supplied 1672 x 941 PNG');
-} catch { fail('target office image cannot be decoded'); }
-try {
-  const metadata = await sharp(wellbeLogo).metadata();
-  if (metadata.format !== 'jpeg' || metadata.width !== 2000 || metadata.height !== 1498) fail('official Well be logo must retain its supplied dimensions');
-  const hash = createHash('sha256').update(fs.readFileSync(wellbeLogo)).digest('hex').toUpperCase();
-  if (hash !== '60B9F3C7171E756920A47803F3B3FB17601644B62DBAFFCF73D25604A9C23045') fail('official Well be logo bytes were modified');
-} catch { fail('official Well be logo cannot be decoded'); }
-
-for (const [files, expectedFormat, label] of [[sourcePngs, 'png', 'source PNG'], [webWebps, 'webp', 'WebP']]) {
-  for (const file of files) {
-    const stat = fs.statSync(file);
-    if (stat.size === 0) { fail(`${label} is empty: ${path.relative(root, file)}`); continue; }
-    try {
-      const metadata = await sharp(file).metadata();
-      if (metadata.format !== expectedFormat || !metadata.width || !metadata.height) fail(`${label} has invalid metadata: ${path.relative(root, file)}`);
-    } catch {
-      fail(`${label} cannot be decoded: ${path.relative(root, file)}`);
+  for (const [name, bytes] of files) {
+    const ext = path.extname(name);
+    const lower = name.toLowerCase();
+    check(name.startsWith(assetPrefix) && outputTypes.has(ext) && !emitted.has(lower), 'Unexpected or colliding output: ' + name);
+    emitted.add(lower);
+    if (imageFormats[ext]) {
+      const declared = assetInfo.get(name);
+      check(declared, 'Undeclared image: ' + name);
+      const input = sharp(bytes);
+      const metadata = await input.metadata();
+      await input.raw().toBuffer();
+      check(declared && metadata.format === imageFormats[ext] && metadata.width === declared.width && metadata.height === declared.height,
+        'Image dimensions or encoding do not match: ' + name);
+      imageSizes.set('/' + name, metadata);
+      continue;
+    }
+    const source = String(bytes);
+    for (const [pattern, label] of patterns) check(!pattern.test(source), label + ': ' + name);
+    if (ext === '.svg') {
+      check(/^<svg\b[^>]*viewBox="[^"]+"/i.test(source.trim()) &&
+        !/<script\b|<foreignObject\b|(?:href|xlink:href)="https?:|\son\w+=/i.test(source),
+      'Unsafe SVG content: ' + name);
+    }
+    if (ext === '.css') {
+      for (const [, sourcePath] of source.matchAll(/url\(\s*["']?([^"')\s]+)["']?\s*\)/g)) {
+        check(sourcePath.startsWith(site.basePath) && files.has(sourcePath.slice(1)), 'Broken CSS resource: ' + name);
+      }
+    }
+    if (ext === '.js') {
+      try { execFileSync(process.execPath, ['--input-type=module', '--check'], { input: source, stdio: 'pipe' }); }
+      catch { issues.push('JavaScript syntax error: ' + name); }
     }
   }
+
+  const css = String(files.get(assetPrefix + 'css/styles.css'));
+  check(css.includes('prefers-reduced-motion') && css.includes('forced-colors'), 'Accessibility media queries are missing.');
+  const legacy = JSON.parse(fs.readFileSync(path.join(root, 'firebase.json'), 'utf8'));
+  const rc = JSON.parse(fs.readFileSync(path.join(root, '.firebaserc'), 'utf8'));
+  check(legacy.hosting?.public === 'public' && legacy.hosting.ignore?.includes('assets/infographics/source-package/**') &&
+    rc.projects?.default === 'minhos-wellbe-homecare-lecture', 'Legacy Firebase scope changed.');
+  const deploy = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).scripts.deploy;
+  check(deploy === 'node scripts/deploy-disabled.mjs', 'The standalone LP deploy entry is enabled.');
+  JSON.parse(fs.readFileSync(path.join(root, 'public/schemas/analytics-event.schema.json'), 'utf8'));
+  execFileSync(process.execPath, ['--check', path.join(root, 'scripts/process-infographics.mjs')], { stdio: 'pipe' });
+
+  for (const name of names) {
+    const source = files.get(assetPrefix + name);
+    check(typeof source === 'string', 'Missing generated page: ' + name);
+    if (!source) continue;
+    const landing = name === 'index.html';
+    const expectedUrl = publicUrl + (landing ? '' : name);
+    const expectedRobots = landing && mode === 'release' ? 'index, follow' : 'noindex, follow';
+    const meta = (key, field = 'name') => tags(source, 'meta').find((tag) => attr(tag, field) === key);
+    const canonical = tags(source, 'link').find((tag) => attr(tag, 'rel') === 'canonical');
+    const imageUrl = attr(meta('og:image', 'property') || '', 'content') || '';
+    const description = attr(meta('description') || '', 'content');
+    const ids = [...source.matchAll(/\sid="([a-z0-9_-]+)"/gi)].map(([, id]) => id);
+    check(new Set(ids).size === ids.length, 'Duplicate element ID: ' + name);
+    check(/<html lang="ja">/.test(source) && /<meta charset="utf-8">/.test(source) &&
+      Boolean(meta('viewport')), 'Language, UTF-8 or viewport is missing: ' + name);
+    check(tags(source, 'h1').length === 1 && tags(source, 'main').length === 1 &&
+      source.includes('class="skip-link" href="#main-content"'), 'Main landmark, h1 or skip link missing: ' + name);
+    check(attr(canonical || '', 'href') === expectedUrl && attr(meta('og:url', 'property') || '', 'content') === expectedUrl,
+      'Canonical or OGP URL mismatch: ' + name);
+    check(Boolean(description) && source.includes('<title>') && attr(meta('robots') || '', 'content') === expectedRobots &&
+      imageUrl.startsWith(publicUrl) && imageSizes.has(imageUrl.slice(site.origin.length)), 'Incomplete SEO metadata: ' + name);
+    const jsonLd = source.match(/<script type="application\/ld\+json">([^<]+)<\/script>/);
+    const ld = jsonLd ? JSON.parse(jsonLd[1]) : null;
+    check(ld?.['@type'] === 'WebPage' && ld.url === expectedUrl && Boolean(ld.description), 'WebPage metadata mismatch: ' + name);
+
+    for (const tag of tags(source, 'a|img|link|script')) {
+      const src = attr(tag, 'src');
+      const href = attr(tag, 'href');
+      for (const ref of [src, href].filter(Boolean)) {
+        if (ref.startsWith('#')) check(ids.includes(ref.slice(1)), 'Unknown anchor ' + ref + ' in ' + name);
+        else if (ref === expectedUrl || ref === site.origin + '/' || ref === site.operator?.contactUrl || configuredActions.includes(ref)) continue;
+        else check(ref === site.basePath || (ref.startsWith(site.basePath) && files.has(ref.slice(1))),
+          'Broken or unapproved URL: ' + name + ' ' + ref);
+      }
+    }
+    const images = tags(source, 'img');
+    for (const tag of images) {
+      const src = attr(tag, 'src');
+      const dimensions = imageSizes.get(src);
+      check(Boolean(dimensions) && Number(attr(tag, 'width')) === dimensions.width && Number(attr(tag, 'height')) === dimensions.height &&
+        attr(tag, 'alt') !== undefined, 'Image needs matching dimensions and alt: ' + name + ' ' + src);
+      if (!tag.includes('class="brand-') && !tag.includes('fetchpriority="high"')) {
+        check(attr(tag, 'loading') === 'lazy', 'Below-fold image is not lazy: ' + src);
+      }
+      const srcset = attr(tag, 'srcset');
+      for (const candidate of srcset ? srcset.split(',') : []) {
+        const [reference, width] = candidate.trim().split(/\s+/);
+        const responsive = imageSizes.get(reference);
+        check(responsive && width === responsive.width + 'w' && Boolean(attr(tag, 'sizes')), 'Invalid srcset: ' + src);
+      }
+    }
+    for (const logo of ['wellbe-logo', 'minhos-logo']) {
+      check(images.filter((tag) => attr(tag, 'src') === forward(site.assets[logo].src)).length === 2, 'Header/footer logo missing: ' + name);
+    }
+    const eager = images.filter((tag) => attr(tag, 'loading') === 'eager');
+    check(landing ? eager.length === 1 && attr(eager[0], 'fetchpriority') === 'high' : !eager.length, 'Unexpected image loading priority: ' + name);
+    check(!source.includes('script7.js') && !source.includes('googletagmanager') && !source.includes('analytics-event.schema'), 'Competing analytics script: ' + name);
+    if (!landing) continue;
+    for (const target of [...source.matchAll(/aria-labelledby="([^"]+)"/g)].flatMap(([, value]) => value.split(' '))) {
+      check(ids.includes(target), 'Unlabelled section: ' + target);
+    }
+    const ctas = tags(source, 'a').filter((tag) => attr(tag, 'data-cta'));
+    for (const kind of ['consultation', 'registration']) {
+      const { id } = site.actions[kind];
+      const href = actionHref(site, kind, next);
+      const matching = ctas.filter((tag) => attr(tag, 'data-cta') === id);
+      const locations = kind === 'consultation' ? ['hero', 'education', 'final'] : ['next'];
+      check(matching.length === (href ? locations.length : 0), 'CTA placements mismatch: ' + kind);
+      if (href) for (const location of locations) {
+        const anchor = matching.find((tag) => attr(tag, 'data-cta-loc') === location);
+        check(anchor && attr(anchor, 'href') === href && (kind === 'consultation' || attr(anchor, 'data-occurrence-id') === next.id), 'CTA target mismatch: ' + location);
+      }
+    }
+    check(!tags(source, 'p|button|span').some((tag) => attr(tag, 'data-cta')), 'A disabled or non-link CTA is tracked.');
+    const details = [...source.matchAll(/<details>\s*<summary>([^<]+)<\/summary>\s*<p>[\s\S]+?<\/p>\s*<\/details>/g)];
+    check(details.length > 0 && details.length === tags(source, 'details').length, 'FAQ needs discoverable summaries and answers.');
+  }
+
+  const sitemap = files.get(assetPrefix + 'sitemap.xml');
+  check(mode === 'review' ? !sitemap : Boolean(sitemap?.includes('<loc>' + publicUrl + '</loc>')), 'Sitemap does not match the mode.');
+  const config = String(files.get(assetPrefix + 'js/config.js'));
+  check(mode === 'release' || config.includes('"measurementId":null'), 'Review enables analytics.');
+  if (issues.length) throw new Error(issues.join('\n'));
+  return { pages: names.length, images: imageSizes.size, files: files.size, mode };
 }
 
-const html = fs.readFileSync(path.join(publicRoot, 'index.html'), 'utf8');
-const config = fs.readFileSync(path.join(publicRoot, 'js', 'config.js'), 'utf8');
-const analytics = fs.readFileSync(path.join(publicRoot, 'js', 'analytics.js'), 'utf8');
-const app = fs.readFileSync(path.join(publicRoot, 'js', 'app.js'), 'utf8');
-const styles = fs.readFileSync(path.join(publicRoot, 'css', 'tokens.css'), 'utf8') + fs.readFileSync(path.join(publicRoot, 'css', 'styles.css'), 'utf8');
-
-if ((html.match(/<h1\b/gi) || []).length !== 1) fail('index.html must contain exactly one H1');
-if ((html.match(/<main\b/gi) || []).length !== 1) fail('index.html must contain exactly one main');
-if (!/<a[^>]+class="[^"]*skip-link[^"]*"[^>]+href="#main-content"/.test(html)) fail('skip link is missing');
-if (!styles.includes('prefers-reduced-motion')) fail('prefers-reduced-motion support is missing');
-if (!styles.includes('forced-colors')) fail('forced-colors support is missing');
-
-for (const expected of [
-  `<link rel="canonical" href="${productionOrigin}">`,
-  `<meta property="og:url" content="${productionOrigin}">`,
-  `<meta property="og:image" content="${productionOrigin}assets/photos/ogp-edema-program.png">`,
-  `canonicalOrigin: '${productionOrigin}'`
-]) if (!(html + config).includes(expected)) fail(`missing production URL setting: ${expected}`);
-
-for (const expected of ['lp_homecare_edema_program_2026', 'homecare_edema_program_2026', 'consult_edema_program', 'visual_reference_v2']) {
-  if (!(html + config + analytics).includes(expected)) fail(`stable analytics ID missing: ${expected}`);
-}
-
-for (const name of ['伊藤 健大', '永井 友基']) {
-  if ((html.match(new RegExp(name, 'g')) || []).length !== 2) fail(`${name} must appear exactly in heading and image alt`);
-}
-for (const image of ['creator-ito-kenta.webp', 'creator-nagai-yuki.webp']) {
-  if ((html.match(new RegExp(image, 'g')) || []).length !== 1) fail(`${image} must appear once`);
-}
-for (const phrase of ['二人でつくる理由', '訪問したら、浮腫が強くなっていた', '導入相談フォームは現在準備中です。']) {
-  if (!html.includes(phrase) && !app.includes(phrase)) fail(`required copy missing: ${phrase}`);
-}
-
-const ctaAnchors = [...html.matchAll(/<a\b[^>]*class="[^"]*js-application-link[^"]*"[^>]*>([^<]+)<\/a>/g)];
-if (ctaAnchors.length !== 5) fail(`expected 5 primary CTA placements, found ${ctaAnchors.length}`);
-for (const match of ctaAnchors) if (match[1].trim() !== ctaLabel) fail(`CTA label is not unified: ${match[1].trim()}`);
-
-const faqButtons = [...html.matchAll(/<button\b[^>]*aria-expanded="false"[^>]*aria-controls="faq-panel-[1-5]"/g)];
-if (faqButtons.length !== 5) fail(`expected 5 FAQ buttons with aria-expanded, found ${faqButtons.length}`);
-if ((html.match(/class="faq-panel"[^>]*role="region"/g) || []).length !== 5) fail('every FAQ needs a labelled region panel');
-
-const textExtensions = new Set(['.css', '.html', '.js', '.json', '.svg', '.txt', '.xml', '.md', '.csv']);
-const forbiddenPatterns = [
-  [/poc/i, 'internal experiment term'],
-  [/共同開発パートナー/, 'internal partner term'],
-  [/REPLACE_ME|REPLACE_WITH|example\.com|localhost/i, 'production placeholder'],
-  [/data:image|base64/i, 'embedded image data']
-];
-for (const file of publicFiles.filter((candidate) => textExtensions.has(path.extname(candidate).toLowerCase()))) {
-  const source = fs.readFileSync(file, 'utf8');
-  for (const [pattern, label] of forbiddenPatterns) if (pattern.test(source)) fail(`${label} remains in ${path.relative(root, file)}`);
-}
-
-for (const jsFile of ['public/js/config.js', 'public/js/app.js', 'public/js/analytics.js', 'scripts/process-infographics.mjs']) {
-  try { execFileSync(process.execPath, ['--check', path.join(root, jsFile)], { stdio: 'pipe' }); }
-  catch { fail(`JavaScript syntax error: ${jsFile}`); }
-}
-try { JSON.parse(fs.readFileSync(path.join(publicRoot, 'schemas', 'analytics-event.schema.json'), 'utf8')); }
-catch { fail('analytics-event.schema.json is invalid JSON'); }
-
-for (const svg of publicFiles.filter((file) => path.extname(file).toLowerCase() === '.svg')) {
-  const source = fs.readFileSync(svg, 'utf8');
-  const relative = path.relative(root, svg);
-  if (!/^<svg\b[^>]*viewBox="[^"]+"/i.test(source.trim())) fail(`${relative} has no root viewBox`);
-  if (/<script\b|<foreignObject\b|(?:href|xlink:href)="https?:|data:image|base64/i.test(source)) fail(`${relative} contains forbidden SVG content`);
-}
-
-for (const htmlFile of publicFiles.filter((file) => path.extname(file).toLowerCase() === '.html')) {
-  const source = fs.readFileSync(htmlFile, 'utf8');
-  for (const match of source.matchAll(/(?:src|href)="([^"]+)"/g)) {
-    const reference = match[1];
-    if (/^(?:https?:|#|mailto:|tel:)/i.test(reference)) continue;
-    const clean = reference.split(/[?#]/)[0];
-    const target = clean.startsWith('/') ? path.join(publicRoot, clean.slice(1)) : path.resolve(path.dirname(htmlFile), clean);
-    if (!fs.existsSync(target)) fail(`broken local reference in ${path.relative(root, htmlFile)}: ${reference}`);
+if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) {
+  const mode = process.argv.includes('--release') ? 'release' : 'review';
+  try {
+    const result = await validateOutput(buildSite({ mode }));
+    console.log('Validation passed: ' + JSON.stringify(result));
+  } catch (error) {
+    console.error(error.message);
+    process.exitCode = 1;
   }
 }
-
-for (const asset of webPaths) {
-  const occurrences = (html.match(new RegExp(asset.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) || []).length;
-  const expected = asset.includes('/hero/') ? 2 : 1;
-  if (occurrences !== expected) fail(`${asset} must appear ${expected} time(s), found ${occurrences}`);
-}
-if ((html.match(/\/assets\/logo\/wellbe-official-logo\.jpg/g) || []).length !== 2) fail('official Well be logo must appear in Header and Footer');
-if (html.includes('wellbe-wordmark') || html.includes('<span>Well be</span>')) fail('provisional Well be wordmark remains visible');
-if ((html.match(/\/assets\/infographics\/web\/target\/target-office-team-meeting-wide\.png/g) || []).length !== 1) fail('new target office image must appear once');
-if (html.includes('target-small-team-meeting-wide.svg')) fail('old target illustration reference remains');
-if (html.includes('/assets/infographics/source-package/')) fail('HTML must not reference source-package');
-
-const imageTags = [...html.matchAll(/<img\b[^>]*>/g)].map((match) => match[0]);
-for (const tag of imageTags) {
-  if (!/\bwidth="\d+"/.test(tag) || !/\bheight="\d+"/.test(tag)) fail(`image lacks intrinsic dimensions: ${tag.slice(0, 100)}`);
-  if (!/\balt="[^"]*"/.test(tag)) fail(`image lacks alt: ${tag.slice(0, 100)}`);
-  if (/src="https?:|src="data:/i.test(tag)) fail('page image must be a local external file');
-}
-const heroTag = imageTags.find((tag) => tag.includes('/web/hero/hero-team-learning-wide.webp')) || '';
-if (!/loading="eager"/.test(heroTag) || !/fetchpriority="high"/.test(heroTag)) fail('Hero LCP image must be eager and high priority');
-if ((html.match(/loading="eager"/g) || []).length !== 1) fail('Hero must be the only eager image');
-for (const tag of imageTags.filter((item) => item !== heroTag && !item.includes('class="site-brand__logo'))) {
-  if (!/loading="lazy"/.test(tag)) fail(`below-fold image must be lazy-loaded: ${tag.slice(0, 100)}`);
-}
-
-const rootInfographicFiles = fs.readdirSync(infographicRoot, { withFileTypes: true }).filter((entry) => entry.isFile()).map((entry) => entry.name);
-if (rootInfographicFiles.length !== 0) {
-  fail(`unexpected legacy files remain in public/assets/infographics: ${rootInfographicFiles.join(', ')}`);
-}
-
-const firebaseConfig = JSON.parse(fs.readFileSync(path.join(root, 'firebase.json'), 'utf8'));
-if (firebaseConfig.hosting?.public !== 'public' || firebaseConfig.hosting?.cleanUrls !== true || firebaseConfig.hosting?.trailingSlash !== false) fail('Firebase Hosting must use public, cleanUrls=true, trailingSlash=false');
-if (!firebaseConfig.hosting?.ignore?.includes('assets/infographics/source-package/**')) fail('source-package must be excluded from Firebase Hosting');
-const rc = JSON.parse(fs.readFileSync(path.join(root, '.firebaserc'), 'utf8'));
-if (rc.projects?.default !== 'minhos-wellbe-homecare-lecture') fail('.firebaserc points to the wrong project');
-
-if (failures) {
-  console.error(`\nValidation failed with ${failures} issue(s).`);
-  process.exit(1);
-}
-const sourcePackageStatus = hasLocalSourcePackage ? '20 local source PNGs' : 'local source package intentionally absent';
-console.log(`Validation passed: ${sourcePackageStatus}, 20 optimized WebPs, supplied target PNG, official Well be logo, structure, accessibility, local assets, and Firebase scope are valid.`);

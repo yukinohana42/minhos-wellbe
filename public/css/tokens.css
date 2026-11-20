@@ -1,131 +1,21 @@
-/* Minhos! Web Experience Standards v1.0.0 */
-
 :root {
   color-scheme: light;
-
-  /* Logo-derived source colors. Do not change without brand review. */
-  --minhos-logo-blue: #2d83e1;
-  --minhos-logo-lime: #a2fb0b;
-  --minhos-logo-yellow: #fef201;
-  --minhos-logo-orange: #ff9601;
-  --minhos-logo-ink: #2a2a2a;
-
-  /* Accessible UI extensions. */
-  --color-blue-050: #f2f8ff;
-  --color-blue-100: #e2f0ff;
-  --color-blue-500: #2d83e1;
-  --color-blue-700: #1559a6;
-  --color-blue-800: #10477f;
-  --color-orange-050: #fff6e8;
-  --color-orange-500: #ff9601;
-  --color-orange-600: #e98200;
-  --color-orange-700: #a84200;
-  --color-lime-050: #f5ffe4;
-  --color-lime-500: #a2fb0b;
-  --color-yellow-050: #fffde0;
-  --color-yellow-500: #fef201;
-  --color-ink-900: #2a2a2a;
-  --color-ink-700: #414956;
-  --color-ink-600: #5a6472;
-  --color-ink-500: #707b88;
-  --color-white: #ffffff;
-  --color-canvas: #fffefa;
-  --color-border: #d8e0e8;
-  --color-border-strong: #aeb9c5;
-  --color-success: #166534;
-  --color-warning: #854d0e;
-  --color-error: #b42318;
-  --color-info: #1559a6;
-
-  /* Semantic color aliases. */
-  --color-bg-page: var(--color-canvas);
-  --color-bg-surface: var(--color-white);
-  --color-bg-trust: var(--color-blue-050);
-  --color-bg-action: var(--color-orange-050);
-  --color-text-primary: var(--color-ink-900);
-  --color-text-secondary: var(--color-ink-600);
-  --color-text-link: var(--color-blue-700);
-  --color-focus: var(--color-blue-700);
-  --color-action-primary-bg: var(--color-orange-500);
-  --color-action-primary-fg: var(--color-ink-900);
-  --color-action-primary-hover: var(--color-orange-600);
-  --color-action-secondary-bg: var(--color-blue-700);
-  --color-action-secondary-fg: var(--color-white);
-  --color-action-secondary-hover: var(--color-blue-800);
-
-  /* Typography. */
-  --font-sans: "Noto Sans JP", "Hiragino Sans", "Yu Gothic UI", "Yu Gothic", Meiryo, sans-serif;
-  --font-rounded: "M PLUS Rounded 1c", var(--font-sans);
-  --font-size-display: clamp(2.5rem, 6vw, 4rem);
-  --font-size-h1: clamp(2.25rem, 5vw, 3.5rem);
-  --font-size-h2: clamp(1.75rem, 3.5vw, 2.75rem);
-  --font-size-h3: clamp(1.25rem, 2vw, 1.625rem);
-  --font-size-body-lg: 1.125rem;
-  --font-size-body: 1rem;
-  --font-size-small: 0.875rem;
-  --line-height-heading: 1.25;
-  --line-height-body: 1.75;
-  --font-weight-regular: 400;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 700;
-  --font-weight-extrabold: 800;
-
-  /* Spacing. */
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-6: 1.5rem;
-  --space-8: 2rem;
-  --space-12: 3rem;
-  --space-16: 4rem;
-  --space-20: 5rem;
-  --space-24: 6rem;
-  --space-32: 8rem;
-
-  /* Layout. */
-  --container-narrow: 45rem;
-  --container-content: 60rem;
-  --container-wide: 75rem;
-  --page-gutter: clamp(1.25rem, 4vw, 2.5rem);
-  --section-space: clamp(4rem, 10vw, 9rem);
-
-  /* Shape. */
-  --radius-sm: 0.625rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.5rem;
-  --radius-pill: 999px;
-  --border-width: 1px;
-  --focus-ring-width: 3px;
-  --focus-ring-offset: 3px;
-
-  /* Shadows are intentionally restrained. */
-  --shadow-sm: 0 1px 2px rgb(42 42 42 / 0.08);
-  --shadow-md: 0 12px 30px rgb(21 89 166 / 0.12);
-  --shadow-sticky: 0 -8px 24px rgb(42 42 42 / 0.12);
-
-  /* Motion. */
-  --duration-fast: 160ms;
-  --duration-standard: 240ms;
-  --duration-slow: 360ms;
-  --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
-
-  /* Layering. */
-  --z-base: 0;
-  --z-header: 100;
-  --z-sticky-cta: 200;
-  --z-overlay: 300;
-  --z-modal: 400;
-  --z-toast: 500;
-}
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    scroll-behavior: auto !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+  --white: #fff;
+  --paper: #faf9f6;
+  --blue: #3253a4;
+  --minhos-blue: #1270ab;
+  --navy: #19294f;
+  --ink: #242936;
+  --muted: #4c5b6b;
+  --subtle: #edf3fa;
+  --line: #cdd7e6;
+  --orange: #f6a900;
+  --warm: #fff3d6;
+  --sans: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", "Noto Sans CJK JP", sans-serif;
+  --serif: "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif CJK JP", serif;
+  --numeric: "Georgia", "Times New Roman", serif;
+  --shell: 76rem;
+  --gutter: clamp(1.125rem, 5.15vw, 4.75rem);
+  --space: clamp(4rem, 8.5vw, 8.75rem);
+  --focus: var(--blue);
 }

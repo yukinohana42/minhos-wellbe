@@ -1,0 +1,166 @@
+{
+  "origin": "https://minhos-management.jp",
+  "basePath": "/wellbe/",
+  "serviceId": "wellbe_homecare",
+  "confirmedOn": "2026-11-20",
+  "title": "訪問看護の勉強会と新人教育｜Well be × みんほす！",
+  "heading": [
+    "訪問先の「いつもと違う」を",
+    "自分で判断できるようになって",
+    "医師に伝わる言葉に"
+  ],
+  "description": "訪問看護の事例をもとに、何を見て、どう考え、医師に何を伝えるかを学ぶオンライン勉強会です。\n事業所の新人教育を僕たちに任せてみませんか？",
+  "freeNotice": "オンライン勉強会は無料で参加できます。",
+  "operator": {
+    "name": "訪問看護ステーションWell Be・みんほす！マネジメント",
+    "contactUrl": null
+  },
+  "actions": {
+    "consultation": {
+      "id": "wellbe_consult",
+      "label": "事業所の導入について相談する",
+      "url": "https://docs.google.com/forms/d/e/1FAIpQLSf459kNKfCR0mt7x2A7IFcZy66-1b216jgua8aNdHF0wtMjzw/viewform",
+      "enabled": true
+    },
+    "registration": {
+      "id": "wellbe_next_register",
+      "label": "勉強会の参加フォームへ",
+      "url": "https://docs.google.com/forms/d/e/1FAIpQLSfdvKudv7ffKAAcbuQ28puhnVmh7rZua-DOxlOo9FylwY_HPw/viewform",
+      "enabled": true,
+      "occurrenceId": "clinical-reasoning-intro"
+    }
+  },
+  "analytics": {
+    "enabled": false,
+    "measurementId": null
+  },
+  "education": {
+    "status": "planned",
+    "title": "新人教育を、事業所に合わせて。",
+    "description": "新人が何から学び、先輩とどう振り返るか。新入職者向けの教育セットを準備しています。事業所ごとの育成についても、導入相談でお話しいただけます。",
+    "materialAsset": null
+  },
+  "occurrences": [
+    {
+      "id": "edema-first",
+      "title": "浮腫",
+      "date": "2026-10-15",
+      "startTime": null,
+      "status": "held",
+      "number": 1,
+      "confirmedOn": "2026-11-20",
+      "public": true,
+      "summary": "浮腫の基本と観察から、医師への報告の仕方までを取り上げました。"
+    },
+    {
+      "id": "clinical-reasoning-intro",
+      "title": "看護師さん向けの臨床推論入門",
+      "date": "2026-12-23",
+      "startTime": "21:00",
+      "status": "scheduled",
+      "number": null,
+      "confirmedOn": "2026-11-20",
+      "public": true,
+      "summary": null
+    }
+  ],
+  "voices": [],
+  "hosts": [
+    {
+      "id": "ito-kenta",
+      "name": "伊藤 健大",
+      "organisation": "Well be",
+      "bio": "訪問看護の現場で繰り返し出会う困りごとから、勉強会で一緒に考える問いを持ち込みます。",
+      "photo": "ito",
+      "approved": true
+    },
+    {
+      "id": "nagai-yuki",
+      "name": "永井 友基",
+      "organisation": "みんほす！",
+      "bio": "医療教育の視点から、現場の問いを学びやすい順番やケースに整理します。",
+      "photo": "nagai",
+      "approved": true
+    }
+  ],
+  "assets": {
+    "wellbe-logo": {
+      "src": "assets/logo/wellbe-official-logo.jpg",
+      "width": 2000,
+      "height": 1498,
+      "alt": "訪問看護ステーション ウェルビー",
+      "approved": true,
+      "sha256": "60b9f3c7171e756920a47803f3b3fb17601644b62dbaffcf73d25604a9c23045"
+    },
+    "minhos-logo": {
+      "src": "assets/logo/minhos-official-vertical.png",
+      "width": 842,
+      "height": 595,
+      "alt": "みんほす！",
+      "approved": true,
+      "sha256": "c87558c347c01f5e37a018d50a3a0d1b12142f4086cd0100399dfe57d6ab3767"
+    },
+    "team-live": {
+      "src": "assets/illustrations/team-live-1536.webp",
+      "width": 1536,
+      "height": 1024,
+      "small": {
+        "src": "assets/illustrations/team-live-768.webp",
+        "width": 768,
+        "height": 512
+      },
+      "approved": true,
+      "alt": "訪問看護師が先輩と並び、画面越しの講師に話しかけている。"
+    },
+    "home-listening": {
+      "src": "assets/illustrations/home-listening-1536.webp",
+      "width": 1536,
+      "height": 1024,
+      "small": {
+        "src": "assets/illustrations/home-listening-768.webp",
+        "width": 768,
+        "height": 512
+      },
+      "approved": true,
+      "alt": "自宅で暮らしぶりを話す利用者に、訪問看護師が耳を傾けている。"
+    },
+    "physician-report": {
+      "src": "assets/illustrations/physician-report-1536.webp",
+      "width": 1536,
+      "height": 1024,
+      "small": {
+        "src": "assets/illustrations/physician-report-768.webp",
+        "width": 768,
+        "height": 512
+      },
+      "approved": true,
+      "alt": "訪問看護師が記録を手に、離れた場所にいる医師へ電話で報告している。"
+    },
+    "new-staff": {
+      "src": "assets/illustrations/new-staff-1536.webp",
+      "width": 1536,
+      "height": 1024,
+      "small": {
+        "src": "assets/illustrations/new-staff-768.webp",
+        "width": 768,
+        "height": 512
+      },
+      "approved": true,
+      "alt": "新入職の看護師がノートを開き、先輩と訪問を振り返っている。"
+    },
+    "ito": {
+      "src": "assets/photos/creator-ito-kenta.webp",
+      "width": 439,
+      "height": 363,
+      "alt": "伊藤 健大",
+      "approved": true
+    },
+    "nagai": {
+      "src": "assets/photos/creator-nagai-yuki.webp",
+      "width": 438,
+      "height": 363,
+      "alt": "永井 友基",
+      "approved": true
+    }
+  }
+}
