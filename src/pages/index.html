@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  {{HEAD}}
+  <script type="module" src="{{BASE}}js/app.js"></script>
+</head>
+<body id="top">
+  <a class="skip-link" href="#main-content">本文へ</a>
+  <header class="site-header">
+    <div class="shell header-inner">
+      {{BRAND}}
+      <nav class="header-nav" aria-label="ページ内">
+        <a class="header-detail" href="#learning">学べること</a>
+        <a class="header-detail" href="#history">開催記録</a>
+        <a class="header-detail" href="#hosts">主催者</a>
+        <a class="nav-next" href="#next">次回の勉強会</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" tabindex="-1">
+    <section class="shell hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <h1 id="hero-title">{{HEADING}}</h1>
+        <p class="hero-lead">{{DESCRIPTION}}</p>
+        {{CONSULT_HERO}}
+      </div>
+      <figure class="hero-figure">{{HERO_IMAGE}}</figure>
+    </section>
+
+    <section id="next" class="next-band" aria-labelledby="next-heading">
+      <div class="shell next-inner">
+        {{NEXT_SESSION}}
+      </div>
+    </section>
+
+    <section id="learning" class="shell learning band-space" aria-labelledby="learning-heading">
+      <div class="section-intro">
+        <h2 id="learning-heading">現場の迷いを、<br>勉強会で考える。</h2>
+        <p>訪問看護の現場で出会う問いを、定期的なオンライン勉強会で取り上げます。参加者と話しながら、次の訪問で使える考え方を整理します。</p>
+      </div>
+      <div class="learning-spread">
+        <figure class="learning-scene">
+          {{HOME_IMAGE}}
+          <figcaption>
+            <h3>訪問先で、何を確かめる？</h3>
+            <p>利用者さんの話を聞き、いつもとの違いに気づいたとき、何を観察するかを考えます。</p>
+          </figcaption>
+        </figure>
+        <figure class="learning-scene learning-scene-report">
+          {{REPORT_IMAGE}}
+          <figcaption>
+            <h3>医師に、どう伝える？</h3>
+            <p>観察したことを整理し、気になる変化や相談したいことが伝わる報告を学びます。</p>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="education" class="education-band" aria-labelledby="education-heading">
+      <div class="shell education-spread">
+        <figure class="education-figure">{{EDUCATION_IMAGE}}</figure>
+        <div class="education-copy">
+          <h2 id="education-heading">{{EDUCATION_TITLE}}</h2>
+          <p>{{EDUCATION_DESCRIPTION}}</p>
+          {{CONSULT_EDUCATION}}
+        </div>
+      </div>
+    </section>
+
+    <section id="history" class="shell band-space history" aria-labelledby="history-heading">
+      <h2 id="history-heading">これまでの勉強会</h2>
+      {{PAST_SESSIONS}}
+    </section>
+    {{PARTICIPANT_VOICES}}
+
+    <section id="hosts" class="hosts-band" aria-labelledby="hosts-heading">
+      <div class="shell band-space">
+        <div class="section-intro">
+          <h2 id="hosts-heading">二人でつくる理由</h2>
+          <p>訪問看護の現場で生まれた問いを持ち寄り、観察や報告の考え方を一緒に組み立てます。</p>
+        </div>
+        <div class="hosts">{{HOSTS}}</div>
+      </div>
+    </section>
+
+    <section id="guide" class="shell band-space guide" aria-labelledby="guide-heading">
+      <h2 id="guide-heading">参加・導入の流れ</h2>
+      <div class="paths">
+        <div class="path">
+          <h3>個人で勉強会に参加する</h3>
+          <p>参加フォームに回答したあと、案内に沿ってLINEオープンチャットへご参加ください。当日のZoomリンクはチャット内でお知らせします。</p>
+          <a href="#next">次回の勉強会を確認する</a>
+        </div>
+        <div class="path">
+          <h3>事業所で導入を相談する</h3>
+          <p>新人教育や、チームで共通に学びたいテーマについてお聞かせください。</p>
+          <a href="#consultation">事業所向けの相談案内へ</a>
+        </div>
+      </div>
+      <h3 class="faq-heading">よくある質問</h3>
+      <div class="faq">
+        <details>
+          <summary>誰が参加できますか？</summary>
+          <p>訪問看護に携わる看護師さんが対象です。事業所の新人教育を担当する管理者の方からの導入相談も想定しています。</p>
+        </details>
+        <details>
+          <summary>参加費はかかりますか？</summary>
+          <p>{{FREE_NOTICE}}</p>
+        </details>
+        <details>
+          <summary>勉強会はどのように参加しますか？</summary>
+          <p>当日は、LINEオープンチャットでご案内するZoomリンクからご参加ください。インターネットと音声を聞ける端末をご用意ください。</p>
+        </details>
+        <details>
+          <summary>新人向けの教材はありますか？</summary>
+          <p>{{FAQ_MATERIAL}}</p>
+        </details>
+        <details>
+          <summary>どこに問い合わせればよいですか？</summary>
+          <p>{{CONTACT}}</p>
+        </details>
+      </div>
+    </section>
+
+    <section id="consultation" class="consult-band" aria-labelledby="consult-heading">
+      <div class="shell consult-inner">
+        <div>
+          <h2 id="consult-heading">事業所の新人教育を<br>一緒に考えませんか。</h2>
+          <p>教える順番や、現場の疑問をチームで振り返る方法からご相談いただけます。</p>
+        </div>
+        {{CONSULT_FINAL}}
+      </div>
+    </section>
+  </main>
+  {{FOOTER}}
+  {{CONSENT}}
+</body>
+</html>

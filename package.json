@@ -1,16 +1,23 @@
 {
-  "name": "minhos-homecare-edema-lp",
-  "version": "2.0.0",
+  "name": "minhos-wellbe-homecare",
+  "version": "3.0.0",
   "private": true,
-  "description": "Well be × みんほす！ 訪問看護の浮腫実践レクチャーLP",
+  "type": "module",
+  "packageManager": "npm@10.9.8",
+  "description": "Well be × みんほす！ 訪問看護教育サービスLP",
   "scripts": {
-    "serve": "firebase emulators:start --only hosting",
-    "preview": "firebase hosting:channel:deploy edema-lp-preview --expires 7d",
-    "deploy": "firebase deploy --only hosting",
+    "build:site": "node scripts/build-site.mjs",
+    "preview:local": "npm run build:site && node scripts/preview-local.mjs",
+    "serve": "npm run preview:local",
+    "preview": "npm run preview:local",
+    "deploy": "node scripts/deploy-disabled.mjs",
     "images:infographics": "node scripts/process-infographics.mjs",
-    "validate": "node scripts/validate.mjs"
+    "validate": "node --test scripts/site-contract.test.mjs && node scripts/validate.mjs",
+    "validate:release": "node scripts/validate.mjs --release",
+    "export:hp": "node scripts/export-hp.mjs"
   },
   "devDependencies": {
+    "ajv": "8.20.0",
     "firebase-tools": "^14.0.0",
     "sharp": "^0.35.3"
   }

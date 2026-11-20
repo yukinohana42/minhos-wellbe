@@ -1,2 +1,18 @@
-.legal-main{padding:clamp(4rem,8vw,7rem) var(--page-gutter);min-height:70vh}.legal-wrap{max-width:var(--container-narrow);margin:auto}.legal-wrap h1{font-size:clamp(2rem,5vw,3.2rem)}.legal-wrap h2{font-size:1.45rem;margin-top:2.5rem}.legal-notice{padding:1rem 1.1rem;border-left:4px solid var(--color-action-primary-bg);background:var(--color-bg-action);border-radius:0 var(--radius-md) var(--radius-md) 0}.legal-wrap dl{display:grid;grid-template-columns:12rem 1fr;border-top:1px solid var(--color-border)}.legal-wrap dt,.legal-wrap dd{padding:.9rem;border-bottom:1px solid var(--color-border);margin:0}.legal-wrap dt{font-weight:700}.legal-back{display:inline-flex;margin-bottom:2rem}
-@media(max-width:600px){.legal-wrap dl{grid-template-columns:1fr}.legal-wrap dt{border-bottom:0;padding-bottom:.2rem}.legal-wrap dd{padding-top:.2rem}}
+.legal-main {
+  min-block-size: 55vh;
+  padding-block: clamp(2.5rem, 7vw, 6rem);
+}
+.legal-main article { max-inline-size: 46rem; margin-inline: auto; }
+.legal-main h1 {
+  font-size: clamp(1.85rem, 5vw, 3.4rem);
+  line-height: 1.33;
+  margin-block-end: 1.55rem;
+}
+.legal-main h2 {
+  font: 700 clamp(1.1rem, 2.4vw, 1.45rem)/1.55 var(--sans);
+  padding-block-start: .95rem;
+  margin-block: 1.85rem .42rem;
+  border-block-start: 1px solid var(--line);
+}
+.legal-main p + p { margin-block-start: .9rem; }
+.legal-main + .site-footer { border-block-start: 1px solid var(--line); }

@@ -37,6 +37,7 @@ Desktop.ini
 # Generated review output and legacy assets
 artifacts/
 archive/
+.tmp/
 
 # Source image packages, references, and ZIPs
 public/assets/infographics/source-package/
