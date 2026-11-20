@@ -9,6 +9,17 @@ export const legalPages = {
   'terms.html': ['利用条件', '訪問看護教育サービスと勉強会の利用条件について。'],
   'medical-disclaimer.html': ['医療教育と個別の診療について', '訪問看護の学習資料の位置づけと個別の診療について。']
 };
+export const studyPage = {
+  filename: 'study/index.html',
+  path: 'study/',
+  slug: 'wellbe-study',
+  registrationId: 'wellbe_study_next_register'
+};
+const studyLead = [
+  '訪問先で何を見て、', 'どう考え、', '医師や事業所の管理者に', '何を伝えるか。',
+  '訪問看護の事例を', '一緒に考える、', '個人で参加できる', '無料のオンライン勉強会です。'
+];
+const studyDescription = '訪問看護師が個人で参加できる無料のオンライン勉強会です。訪問看護の事例から臨床推論や医師・事業所の管理者への報告を学べます。開催予定とZoom勉強会の参加方法をご案内します。';
 const stylesheetNames = ['tokens.css', 'styles.css', 'legal.css'];
 const japaneseWeekday = new Intl.DateTimeFormat('ja-JP', { weekday: 'short', timeZone: 'Asia/Tokyo' });
 const html = (value) => String(value).replace(/[&<>"']/g, (character) => ({
@@ -34,13 +45,18 @@ function datetime(session) {
 }
 
 function buildHead(site, filename, title, description, previewImage, mode) {
-  const canonical = site.origin + site.basePath + (filename === 'index.html' ? '' : filename);
-  const robots = mode === 'review' || filename !== 'index.html' ? 'noindex, follow' : 'index, follow';
+  const isStudy = filename === studyPage.filename;
+  const isLanding = filename === 'index.html' || isStudy;
+  const canonical = site.origin + site.basePath + (isLanding ? filename.slice(0, -'index.html'.length) : filename);
+  const robots = mode === 'review' || !isLanding ? 'noindex, follow' : 'index, follow';
+  const styles = isStudy
+    ? ['css/tokens.css', studyPage.path + 'styles.css']
+    : (isLanding ? stylesheetNames.slice(0, 2) : stylesheetNames).map((name) => 'css/' + name);
   const lines = [
     '<meta charset="utf-8">',
     '<meta name="viewport" content="width=device-width, initial-scale=1">',
     '<meta name="referrer" content="no-referrer">',
-    '<meta name="theme-color" content="#ffffff">',
+    '<meta name="theme-color" content="' + (isStudy ? '#fbf8f0' : '#ffffff') + '">',
     '<title>' + html(title) + '</title>',
     '<meta name="description" content="' + html(description) + '">',
     '<meta name="robots" content="' + robots + '">',
@@ -58,8 +74,8 @@ function buildHead(site, filename, title, description, previewImage, mode) {
     '<meta name="twitter:card" content="summary_large_image">',
     '<link rel="icon" type="image/png" href="' + html(site.basePath + site.assets['minhos-logo'].src) + '">'
   ];
-  for (const name of (filename === 'index.html' ? stylesheetNames.slice(0, 2) : stylesheetNames)) {
-    lines.push('<link rel="stylesheet" href="' + site.basePath + 'css/' + name + '">');
+  for (const name of styles) {
+    lines.push('<link rel="stylesheet" href="' + site.basePath + name + '">');
   }
   lines.push('<script type="application/ld+json">' + scriptJson({
     '@context': 'https://schema.org', '@type': 'WebPage', url: canonical, name: title, description, inLanguage: 'ja'
@@ -72,19 +88,23 @@ function contact(site) {
   return '<a href="' + html(site.operator.contactUrl) + '" rel="noreferrer">' + html(site.operator.name) + 'へのお問い合わせ</a>';
 }
 
-function actions(site, kind, placement, next) {
+function actions(site, kind, placement, next, study = false) {
   const action = site.actions[kind];
   const href = actionHref(site, kind, next);
   const variant = kind === 'registration' ? ' action-register' : '';
   if (!href) {
+    if (study) return '';
     const status = kind === 'registration' ? '個人参加の登録受付は準備中です' : '導入相談は受付準備中です';
     return '<p class="action-status' + variant + '">' + status + '</p>';
   }
   const occurrence = kind === 'registration' ? ' data-occurrence-id="' + html(next.id) + '"' : '';
   const target = kind === 'registration' ? 'lecture_registration' : 'consultation_form';
-  return '<a class="action-link' + variant + '" href="' + html(href) + '" rel="noreferrer"' +
-    ' data-cta="' + action.id + '" data-cta-loc="' + placement + '" data-target-type="' + target +
-    '" data-lp-slug="wellbe"' + occurrence + '>' + html(action.label) + '</a>';
+  const id = study ? studyPage.registrationId : action.id;
+  const slug = study ? studyPage.slug : 'wellbe';
+  const className = study ? 'study-registration' : 'action-link' + variant;
+  return '<a class="' + className + '" href="' + html(href) + '" rel="noreferrer"' +
+    ' data-cta="' + id + '" data-cta-loc="' + placement + '" data-target-type="' + target +
+    '" data-lp-slug="' + slug + '"' + occurrence + '>' + html(action.label) + '</a>';
 }
 
 function nextSession(site, { next, today }) {
@@ -104,6 +124,32 @@ function nextSession(site, { next, today }) {
     '<p class="next-topic">' + html(next.title) + '</p>' +
     '<p class="next-meta">オンライン<span aria-hidden="true">／</span><span class="visually-hidden">、</span>参加無料</p>' +
     '</div><div class="next-action">' + actions(site, 'registration', 'next', next) + '</div></div>' + empty;
+}
+
+function studyNextSession(site, { next, today }) {
+  const registration = site.actions.registration;
+  const changes = { postponed: '延期', cancelled: '中止' };
+  const changed = !next && site.occurrences.find((item) =>
+    item.id === registration.occurrenceId && item.public && item.date >= today && Object.hasOwn(changes, item.status));
+  const notice = (changed ? '「' + changed.title + '」の開催は' + changes[changed.status] + 'となりました。' : '') +
+    '次回の開催は決まり次第ご案内します。';
+  const fallback = '<div class="study-shell next-missing"' + (next ? ' hidden' : '') + '>' +
+    '<h2 id="next-fallback-heading">次回の勉強会</h2><p>' + html(notice) + '</p></div>';
+  if (!next) return fallback;
+  const date = dateParts(next);
+  const heading = next.date === today ? '本日の勉強会' : '次回の勉強会';
+  return '<div class="study-shell study-next-event" data-event-date="' + next.date + '">' +
+    '<h2 id="next-heading" data-next-heading>' + heading + '</h2>' +
+    '<time datetime="' + datetime(next) + '">' +
+    '<span class="study-visually-hidden">' + html(date.label + (next.startTime ? '' : ' 開始時刻は後日ご案内します。')) + '</span>' +
+    '<span aria-hidden="true" class="study-date-year">' + date.year + '年</span>' +
+    '<span aria-hidden="true" class="study-date-number">' + date.month + '<span>.</span>' + date.day + '</span>' +
+    '<span aria-hidden="true" class="study-date-time">（' + date.weekday + '）' + (next.startTime ? next.startTime + '〜' : '時刻は後日') + '</span>' +
+    (next.startTime ? '<span aria-hidden="true" class="study-date-zone">日本時間</span>' : '') +
+    '</time><p class="study-next-topic">' + html(next.title) + '</p>' +
+    '<p class="study-next-format">無料・オンライン</p>' +
+    (!actionHref(site, 'registration', next) ? '<p class="study-next-format">参加フォームは準備中です。</p>' : '') +
+    '</div>' + fallback;
 }
 
 function pastSessions(held) {
@@ -135,13 +181,13 @@ function testimonials(held, voices) {
   return sections.join('\n');
 }
 
-function footer(site, brand, year) {
+function footer(site, brand, year, extraLink = '') {
   const links = Object.entries(legalPages).map(([file, [label]]) =>
     '<a href="' + site.basePath + file + '">' + label + '</a>').join('\n      ');
   return '<footer class="site-footer"><div class="shell footer-inner"><div class="footer-brand">' + brand +
     (site.operator ? '<p>運営　' + html(site.operator.name) + '</p>' : '') +
     '<p>© ' + year + ' Well be × みんほす！</p></div>' +
-    '<nav class="footer-links" aria-label="サイト情報">' + links +
+    '<nav class="footer-links" aria-label="サイト情報">' + extraLink + links +
     '<a href="' + html(site.origin) + '/">みんほす！ホームページ</a>' +
     '<button class="text-button" type="button" id="cookie-settings" hidden>Cookie設定</button>' +
     (site.operator?.contactUrl ? contact(site) : '') + '</nav></div></footer>';
@@ -165,6 +211,7 @@ export function renderSite(site, { mode = 'review', now = new Date(), reviewVoic
   }
   const files = new Map();
   const basePath = site.basePath;
+  const studyPath = basePath + studyPage.path;
   const prefix = basePath.slice(1);
   const put = (name, bytes) => {
     if (files.has(prefix + name)) throw new Error('Output collision: ' + name);
@@ -189,12 +236,16 @@ export function renderSite(site, { mode = 'review', now = new Date(), reviewVoic
     return '<img' + (className ? ' class="' + className + '"' : '') + ' src="' + src + '"' + responsive +
       ' width="' + asset.width + '" height="' + asset.height + '" alt="' + html(alt ?? asset.alt) + '" decoding="async"' + loading + '>';
   }
-  const brand = (where) => '<a class="brand" href="' + basePath + '" aria-label="Well be × みんほす！ サービス紹介">' +
+  const brand = (where, href = basePath) => '<a class="brand" href="' + href + '" aria-label="Well be × みんほす！ サービス紹介">' +
     image('wellbe-logo', { className: 'brand-wellbe', brandImage: where === 'header' }) +
     '<span class="brand-times" aria-hidden="true">×</span>' +
     image('minhos-logo', { className: 'brand-minhos', brandImage: where === 'header' }) + '</a>';
   const sessions = sessionsAt(site, now);
   const footerHTML = footer(site, brand('footer'), sessions.today.slice(0, 4));
+  const hosts = site.hosts.map((host) => '<article class="host">' +
+    (host.photo ? image(host.photo, { className: 'host-photo', alt: '' }) : '') +
+    '<div class="host-copy"><p class="host-organisation">' + html(host.organisation) + '</p>' +
+    '<h3>' + html(host.name) + '</h3><p>' + html(host.bio) + '</p></div></article>').join('\n      ');
   const analyticsEnabled = mode === 'release' && site.analytics.enabled;
   const common = {
     BASE: basePath,
@@ -211,7 +262,8 @@ export function renderSite(site, { mode = 'review', now = new Date(), reviewVoic
   const leadLines = site.description.split('\n');
   put('index.html', fill('index.html', {
     ...common,
-    HEAD: buildHead(site, 'index.html', site.title, leadLines.join(' '), previewImage, mode),
+    HEAD: buildHead(site, 'index.html', site.title, site.metaDescription ?? leadLines.join(' '), previewImage, mode),
+    STUDY_PATH: studyPath,
     HEADING: site.heading.map((line) => '<span>' + html(line) + '</span>').join('\n          '),
     DESCRIPTION: leadLines.map(html).join('<br>\n'),
     CONSULT_HERO: actions(site, 'consultation', 'hero'),
@@ -227,14 +279,30 @@ export function renderSite(site, { mode = 'review', now = new Date(), reviewVoic
     CONSULT_EDUCATION: actions(site, 'consultation', 'education'),
     PAST_SESSIONS: pastSessions(sessions.held),
     PARTICIPANT_VOICES: testimonials(sessions.held, [...site.voices, ...(mode === 'review' ? reviewVoices : [])]),
-    HOSTS: site.hosts.map((host) => '<article class="host">' +
-      (host.photo ? image(host.photo, { className: 'host-photo', alt: '' }) : '') +
-      '<div class="host-copy"><p class="host-organisation">' + html(host.organisation) + '</p>' +
-      '<h3>' + html(host.name) + '</h3><p>' + html(host.bio) + '</p></div></article>').join('\n      '),
+    HOSTS: hosts,
     FAQ_MATERIAL: site.education.status === 'available'
       ? '事業所での教育用教材については、導入相談の際にご案内します。'
       : '新入職者向けの教育セットは準備中です。提供内容が決まり次第ご案内します。',
     CONSULT_FINAL: actions(site, 'consultation', 'final')
+  }));
+  put(studyPage.filename, fill('study.html', {
+    BASE: basePath,
+    HEAD: buildHead(site, studyPage.filename, '訪問看護師のための無料オンライン勉強会｜Well be × みんほす！',
+      studyDescription, site.assets['study-home-visit'], mode),
+    DESCRIPTION: studyLead.map(html).join('<wbr>'),
+    BRAND: brand('header', studyPath),
+    FOOTER: footer(site, brand('footer', studyPath), sessions.today.slice(0, 4),
+      '<a class="study-business-link" href="' + basePath + '">訪問看護ステーションの新人教育・導入相談</a>'),
+    HERO_IMAGE: image('study-home-visit', { priority: true, sizes: '(min-width: 1380px) 650px, (min-width: 900px) 48vw, calc(100vw - 36px)' }),
+    ONLINE_IMAGE: image('study-online', { sizes: '(min-width: 1380px) 640px, (min-width: 900px) 49vw, calc(100vw - 36px)' }),
+    REPORT_IMAGE: image('study-phone-report', { sizes: '(min-width: 1380px) 470px, (min-width: 900px) 36vw, 72vw' }),
+    REGISTER_HERO: actions(site, 'registration', 'hero', sessions.next, true),
+    REGISTER_GUIDE: actions(site, 'registration', 'guide', sessions.next, true),
+    NEXT_LABEL: sessions.next ? 'next-heading' : 'next-fallback-heading',
+    NEXT_SESSION: studyNextSession(site, sessions),
+    PAST_SESSIONS: pastSessions(sessions.held),
+    PARTICIPANT_VOICES: testimonials(sessions.held, site.voices),
+    HOSTS: hosts
   }));
   for (const [filename, [label, description]] of Object.entries(legalPages)) {
     put(filename, fill('legal-layout.html', {
@@ -246,6 +314,8 @@ export function renderSite(site, { mode = 'review', now = new Date(), reviewVoic
   for (const item of stylesheetNames.map((name) => 'css/' + name).concat(['js/app.js', 'js/analytics.js'])) {
     put(item, fs.readFileSync(safePath(path.join(root, 'public'), item)));
   }
+  const studyStyles = studyPage.path + 'styles.css';
+  put(studyStyles, fs.readFileSync(safePath(root, 'public/' + studyStyles)));
   put('js/config.js', 'export const config = Object.freeze(' + scriptJson({
     mode,
     origin: site.origin,
@@ -256,9 +326,10 @@ export function renderSite(site, { mode = 'review', now = new Date(), reviewVoic
     ctaLabels: Object.fromEntries(Object.values(site.actions).map(({ id, label }) => [id, label]))
   }) + ');\n');
   if (mode === 'release') {
+    const entries = [basePath, studyPath].map((url) => '  <url><loc>' + html(site.origin + url) +
+      '</loc><lastmod>' + site.confirmedOn + '</lastmod></url>');
     put('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n' +
-      '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>' +
-      html(site.origin + basePath) + '</loc><lastmod>' + site.confirmedOn + '</lastmod></url></urlset>\n');
+      '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + entries.join('\n') + '\n</urlset>\n');
   }
   return { site, mode, now, files };
 }

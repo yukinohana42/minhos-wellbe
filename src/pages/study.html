@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  {{HEAD}}
+  <script type="module" src="{{BASE}}js/app.js"></script>
+</head>
+<body class="study-page">
+  <a class="skip-link" href="#main-content">本文へ</a>
+  <header class="study-masthead">
+    <div class="study-shell study-masthead-inner">
+      {{BRAND}}
+      <nav class="study-nav" aria-label="ページ内">
+        <a class="study-nav-learning" href="#learning">学べること</a>
+        <a href="#next">次回の勉強会 <span aria-hidden="true">↓</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" tabindex="-1">
+    <section class="study-shell study-hero" aria-labelledby="study-heading">
+      <div class="study-hero-copy">
+        <h1 id="study-heading">
+          <span>ひとりで訪問する日も、</span>
+          <span>気づいたことを</span>
+          <span>次のケアに<wbr>つなげられる私へ。</span>
+        </h1>
+        <p>{{DESCRIPTION}}</p>
+        {{REGISTER_HERO}}
+      </div>
+      <figure class="study-hero-art">{{HERO_IMAGE}}</figure>
+    </section>
+
+    <section id="next" class="study-next" aria-labelledby="{{NEXT_LABEL}}">
+      {{NEXT_SESSION}}
+    </section>
+
+    <section id="learning" class="study-shell study-learning" aria-labelledby="study-learning-heading">
+      <div class="study-learning-copy">
+        <h2 id="study-learning-heading">次の訪問に<br>持ち帰れること</h2>
+        <dl class="study-lessons">
+          <div>
+            <dt>何を見るか</dt>
+            <dd>普段の様子と今日の変化を捉える。</dd>
+          </div>
+          <div>
+            <dt>どう考えるか</dt>
+            <dd>訪問看護の事例をもとに、見たことと考えたことを整理し、臨床推論を学ぶ。</dd>
+          </div>
+          <div>
+            <dt>どう伝えるか</dt>
+            <dd>気づいた変化と相談したいことを、医師や事業所の管理者に伝える。</dd>
+          </div>
+        </dl>
+      </div>
+      <div class="study-learning-art">
+        <figure class="study-online-art">{{ONLINE_IMAGE}}</figure>
+        <figure class="study-report-art">{{REPORT_IMAGE}}</figure>
+      </div>
+    </section>
+
+    <section class="study-history" aria-labelledby="study-history-heading">
+      <div class="study-shell study-history-inner">
+        <h2 id="study-history-heading">これまでの勉強会</h2>
+        {{PAST_SESSIONS}}
+      </div>
+      {{PARTICIPANT_VOICES}}
+    </section>
+
+    <section class="study-shell study-aspiration" aria-labelledby="study-aspiration-heading">
+      <h2 id="study-aspiration-heading">患者さんやご家族が、<br>安心して話せる訪問へ。</h2>
+      <p>訪問で気づいたことをチームで共有し、次のケアを一緒に考える。</p>
+    </section>
+
+    <section class="study-hosts" aria-labelledby="study-hosts-heading">
+      <div class="study-shell">
+        <h2 id="study-hosts-heading">主催者</h2>
+        <div class="hosts">{{HOSTS}}</div>
+      </div>
+    </section>
+
+    <section class="study-shell study-guide" aria-labelledby="study-guide-heading">
+      <h2 id="study-guide-heading">勉強会の参加方法</h2>
+      <div>
+        <p>訪問看護に携わる看護師が個人で参加できます。フォームに回答したら、表示される案内からLINEオープンチャットへ。勉強会当日のZoomリンクはチャットでお知らせします。</p>
+        {{REGISTER_GUIDE}}
+      </div>
+    </section>
+  </main>
+  {{FOOTER}}
+</body>
+</html>

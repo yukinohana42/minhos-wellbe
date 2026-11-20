@@ -15,7 +15,7 @@ Node `22.23.4` と npm `10.9.8` を使います。WindowsのHP専用環境では
 .\tools\npm-hp.cmd --prefix .tmp/workspaces/minhos-wellbe run preview:local
 ```
 
-CIなど別環境はWell be repoルートで `npm ci`、`npm run validate`、必要に応じて `npm run preview:local` を実行します。確認版は `.tmp/site/public/wellbe/` に生成します。プレビューは127.0.0.1の、表示されたポートと `/wellbe/` を使用します。`build:site` で現在の入力から確認版を生成できます。
+CIなど別環境はWell be repoルートで `npm ci`、`npm run validate`、必要に応じて `npm run preview:local` を実行します。確認版は `.tmp/site/public/wellbe/` に生成します。プレビューは127.0.0.1の表示されたポートで、事業所向けは `/wellbe/`、個人参加向けは `/wellbe/study/` を開きます。`build:site` で現在の入力から確認版を生成できます。
 
 ## 内容の更新
 
@@ -29,7 +29,7 @@ CIなど別環境はWell be repoルートで `npm ci`、`npm run validate`、必
 
 `npm run validate:release` は正規URL・二つの受付・運営者・主催者と写真・掲載対象素材の状態を検証します。確定したコミットの作業ツリーで `npm run export:hp` を実行すると、`.tmp/hp-export/public/wellbe/` と公開ルート外の `manifest.json` を生成します。レビュー用の `npm run export:hp -- --review` は `.tmp/hp-review-export/` に、noindexの別パッケージを作ります。
 
-HP側で未使用の `/wellbe/` を確認し、独立した作業場でmanifestのSHAとファイルハッシュを照合して取り込みます。公開候補ではHPのサイトマップへ正規URLを加え、HP全体の関連検証、CI、許可された公開手順を通します。問題があれば直前のmanifestと統合前のHPコミットをもとにWell be関連の差分を戻します。
+HP側の独立した作業場で、manifestのSHAとファイルハッシュを照合して取り込みます。個人参加向けだけを公開する場合は `public/wellbe/study/` とHPのサイトマップを追加・更新し、既設LPの出力と照合します。HP全体の関連検証、CI、許可された公開手順を通します。問題があれば直前のmanifestと統合前のHPコミットをもとに該当する公開差分を戻します。
 
 `serve` と `preview` はローカル確認に使います。`deploy` はHPへの引き渡し方法を表示します。以前の浮腫LPとそのFirebase設定は参照用です。
 

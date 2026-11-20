@@ -1,0 +1,510 @@
+.study-page {
+  --study-paper: #fbf8f0;
+  --study-band: #293f77;
+  --study-rule: #d7d3c8;
+  --study-light-blue: #edf2fa;
+  --study-gutter: clamp(1.125rem, 4.7vw, 4.5rem);
+  --study-space: clamp(3.625rem, 8vw, 7.75rem);
+  margin: 0;
+  background: var(--study-paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  line-height: 1.8;
+}
+
+.study-page *, .study-page *::before, .study-page *::after {
+  box-sizing: border-box;
+}
+
+.study-page :where(h1, h2, h3, p, figure, dl, dd, blockquote) {
+  margin: 0;
+}
+
+.study-page img {
+  display: block;
+  max-inline-size: 100%;
+  block-size: auto;
+}
+
+.study-page a {
+  color: var(--blue);
+  text-underline-offset: 0.24em;
+}
+
+.study-page :focus-visible {
+  outline: 2px solid var(--minhos-blue);
+  outline-offset: 5px;
+}
+
+.study-page .skip-link, .study-visually-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.study-page .skip-link:focus {
+  inset: 1rem auto auto 1rem;
+  z-index: 2;
+  inline-size: auto;
+  block-size: auto;
+  padding: 0.5rem 1rem;
+  clip-path: none;
+  background: var(--white);
+}
+
+.study-shell, .study-page :is(.voices-inner, .footer-inner) {
+  width: min(100% - 2 * var(--study-gutter), 78rem);
+  margin-inline: auto;
+}
+
+.study-masthead {
+  border-block-end: 1px solid var(--study-rule);
+  background: var(--white);
+}
+
+.study-masthead-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: clamp(4.75rem, 7vw, 6.25rem);
+}
+
+.study-page .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(0.4rem, 1vw, 0.9rem);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.study-page .brand img {
+  width: auto;
+  height: clamp(2.8rem, 4.4vw, 3.6rem);
+  object-fit: contain;
+}
+
+.study-page .brand-times {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.study-nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 3vw, 2.75rem);
+}
+
+.study-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  font-weight: 700;
+  font-size: clamp(0.8125rem, 1.35vw, 0.95rem);
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.study-nav a:hover, .study-page .footer-links a:hover {
+  text-decoration: underline;
+}
+
+.study-nav .study-nav-learning {
+  display: none;
+}
+
+.study-hero {
+  display: grid;
+  gap: clamp(1.625rem, 4vw, 4rem);
+  padding-block: clamp(1.875rem, 5vw, 4.625rem);
+}
+
+.study-hero h1 {
+  color: var(--navy);
+  font-family: var(--serif);
+  font-size: clamp(1.51rem, 7.45vw, 3rem);
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.055em;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.study-hero h1 span {
+  display: block;
+}
+
+.study-hero-copy > p {
+  margin-block-start: clamp(0.95rem, 2vw, 1.5rem);
+  max-width: 30em;
+  font-size: clamp(1rem, 1.4vw, 1.125rem);
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.study-page .study-registration {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(0.75rem, 2.5vw, 1.65rem);
+  max-width: 100%;
+  min-height: 3.35rem;
+  margin-block-start: clamp(1.2rem, 2.7vw, 2rem);
+  padding: 0.7rem clamp(0.95rem, 2vw, 1.5rem);
+  background: var(--blue);
+  color: var(--white);
+  font-size: clamp(0.9375rem, 1.35vw, 1.0625rem);
+  font-weight: 700;
+  line-height: 1.45;
+  text-decoration: none;
+  transition: background-color 160ms ease;
+}
+
+.study-registration::after {
+  content: "↗" / "";
+  font-family: var(--sans);
+  font-size: 1.15em;
+}
+
+.study-page .study-registration:hover {
+  background: var(--navy);
+}
+
+/* The shared event module closes the dated panel at the Tokyo day boundary. */
+.study-page:has(.study-next-event[hidden]) .study-registration {
+  display: none;
+}
+
+.study-hero-art img, .study-learning-art img {
+  inline-size: 100%;
+}
+
+.study-next {
+  background: var(--study-band);
+  color: var(--white);
+}
+
+.study-next :is(.study-next-event, .next-missing)[hidden] {
+  display: none;
+}
+
+.study-next-event {
+  display: grid;
+  grid-template-columns: minmax(5.625rem, auto) minmax(0, 1fr);
+  column-gap: clamp(1rem, 3vw, 2.625rem);
+  align-items: center;
+  padding-block: clamp(1.375rem, 3.4vw, 2.5rem);
+}
+
+.study-next h2 {
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.study-next-event h2, .study-next-event p {
+  grid-column: 2;
+}
+
+.study-next-event time {
+  display: grid;
+  align-self: stretch;
+  align-content: center;
+  grid-area: 1 / 1 / span 3;
+  padding-inline-end: clamp(0.85rem, 3vw, 2.5rem);
+  border-inline-end: 1px solid #7d8db1;
+  line-height: 1.3;
+}
+
+.study-date-year, .study-date-time {
+  font-size: clamp(0.6875rem, 1.3vw, 0.875rem);
+}
+
+.study-date-zone {
+  margin-block-start: 0.2em;
+  font-size: 0.6875rem;
+}
+
+.study-date-number {
+  font-family: var(--numeric);
+  font-size: clamp(2rem, 4.5vw, 3.625rem);
+  line-height: 1.1;
+  letter-spacing: -0.065em;
+  white-space: nowrap;
+}
+
+.study-date-number span {
+  color: var(--orange);
+}
+
+.study-next-topic {
+  margin-block: 0.3rem;
+  font-size: clamp(1.125rem, 2.6vw, 1.875rem);
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.study-next-format {
+  font-size: 0.8125rem;
+}
+
+.study-next .next-missing {
+  display: grid;
+  gap: 0.3rem;
+  padding-block: clamp(1.5rem, 3.4vw, 2.5rem);
+}
+
+.study-page main h2:not(.study-next h2) {
+  color: var(--navy);
+  font-family: var(--serif);
+  font-size: clamp(1.75rem, 3.7vw, 3.4rem);
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.045em;
+}
+
+.study-learning {
+  display: grid;
+  align-items: start;
+  gap: clamp(2rem, 6vw, 6rem);
+  padding-block: var(--study-space);
+}
+
+.study-lessons {
+  margin-block-start: clamp(1.25rem, 3vw, 2.75rem);
+}
+
+.study-lessons > div {
+  display: grid;
+  gap: 0.25rem;
+  padding-block: clamp(0.95rem, 2vw, 1.35rem);
+  border-block-start: 1px solid var(--study-rule);
+}
+
+.study-lessons dt {
+  color: var(--blue);
+  font-size: clamp(1.025rem, 1.6vw, 1.2rem);
+  font-weight: 700;
+}
+
+.study-lessons dd {
+  max-width: 32em;
+  font-size: clamp(1rem, 1.5vw, 1.0625rem);
+}
+
+.study-learning-art {
+  display: grid;
+  gap: clamp(0.875rem, 2.25vw, 2rem);
+}
+
+.study-report-art {
+  width: 77%;
+  margin-inline-start: auto;
+}
+
+.study-history {
+  padding-block: clamp(2.75rem, 6vw, 5.625rem);
+  background: var(--white);
+  border-block: 1px solid var(--study-rule);
+}
+
+.study-history-inner {
+  display: grid;
+  align-items: start;
+  gap: clamp(1.125rem, 3vw, 3rem);
+}
+
+.study-page .history-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.study-page .history-row {
+  display: grid;
+  gap: 0.45rem;
+  padding-block: 1.1rem;
+  border-block-start: 1px solid var(--study-rule);
+}
+
+.study-page .history-date {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.9rem;
+  color: var(--blue);
+  font-size: 0.875rem;
+}
+
+.study-page .history-row h3 {
+  color: var(--navy);
+  font-size: clamp(1.3rem, 2vw, 1.65rem);
+  line-height: 1.4;
+}
+
+.study-page .history-row p, .study-page .host-copy > p:last-child {
+  margin-block-start: 0.35rem;
+  font-size: 1rem;
+}
+
+.study-page .voices-section {
+  margin-block-start: clamp(2rem, 4vw, 3.5rem);
+}
+
+.study-page .voices-layout {
+  display: grid;
+  gap: 1.25rem;
+  margin-block-start: 1rem;
+}
+
+.study-page blockquote {
+  margin-block-end: 0.65rem;
+  padding-inline-start: 1rem;
+  border-inline-start: 2px solid var(--blue);
+}
+
+.study-aspiration {
+  padding-block: var(--study-space);
+  text-align: center;
+}
+
+.study-aspiration p {
+  margin-block-start: 1rem;
+}
+
+.study-hosts {
+  padding-block: clamp(2.75rem, 6vw, 5.5rem);
+  background: var(--study-light-blue);
+}
+
+.study-page .hosts {
+  display: grid;
+  gap: clamp(1.25rem, 4vw, 3.5rem);
+  margin-block-start: clamp(1.35rem, 3vw, 2.5rem);
+}
+
+.study-page .host {
+  display: grid;
+  grid-template-columns: clamp(4.875rem, 16vw, 8.5rem) minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(0.85rem, 2.5vw, 1.75rem);
+}
+
+.study-page .host-photo {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  object-position: center 35%;
+}
+
+.study-page .host-organisation {
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.study-page .host h3 {
+  color: var(--navy);
+  font-size: clamp(1.15rem, 2vw, 1.5rem);
+}
+
+.study-guide {
+  display: grid;
+  align-items: start;
+  gap: 1rem clamp(1.5rem, 5vw, 4.5rem);
+  padding-block: var(--study-space);
+}
+
+.study-guide p {
+  max-width: 38em;
+}
+
+.study-page .site-footer {
+  padding-block: clamp(1.75rem, 4vw, 3.5rem);
+  border-block-start: 1px solid var(--study-rule);
+  background: var(--white);
+  font-size: 0.8125rem;
+}
+
+.study-page .footer-inner, .study-page .footer-links {
+  display: grid;
+  align-content: start;
+  gap: 0.35rem 1.25rem;
+}
+
+.study-page .footer-inner {
+  gap: 1.5rem;
+}
+
+.study-page .footer-brand > p:first-of-type {
+  margin-block-start: 0.65rem;
+}
+
+.study-page .footer-links a {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 2rem;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.study-page .footer-links .study-business-link {
+  color: var(--blue);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+@media (min-width: 44rem) {
+  .study-nav .study-nav-learning {
+    display: inline-flex;
+  }
+
+  .study-page .hosts, .study-page .footer-links {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .study-history-inner, .study-guide, .study-page .footer-inner {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  }
+
+  .study-page .history-row {
+    grid-template-columns: minmax(7.5rem, 0.32fr) minmax(0, 1fr);
+    gap: 1rem;
+  }
+
+  .study-page .history-date {
+    display: grid;
+    align-content: start;
+  }
+}
+
+@media (min-width: 56.25rem) {
+  .study-hero {
+    grid-template-columns: minmax(0, 0.93fr) minmax(0, 1.07fr);
+    align-items: center;
+  }
+
+  .study-hero h1 {
+    font-size: clamp(2rem, 3.5vw, 3.2rem);
+  }
+
+  .study-learning {
+    grid-template-columns: minmax(0, 0.83fr) minmax(0, 1.17fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .study-page .study-registration {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .study-page .study-registration {
+    border: 1px solid ButtonText;
+  }
+}

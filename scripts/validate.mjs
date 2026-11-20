@@ -3,7 +3,7 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 import sharp from 'sharp';
-import { buildSite, legalPages } from './build-site.mjs';
+import { buildSite, legalPages, studyPage } from './build-site.mjs';
 import { root, sessionsAt, actionHref, publicHttps } from './site-content.mjs';
 
 const imageFormats = { '.webp': 'webp', '.png': 'png', '.jpg': 'jpeg' };
@@ -20,7 +20,7 @@ const tags = (source, names) => [...source.matchAll(new RegExp('<(?:' + names + 
 export async function validateOutput({ site, files, mode, now }) {
   const issues = [];
   const check = (truth, note) => { if (!truth) issues.push(note); };
-  const names = ['index.html', ...Object.keys(legalPages)];
+  const names = ['index.html', studyPage.filename, ...Object.keys(legalPages)];
   const emitted = new Set();
   const assetInfo = new Map(Object.values(site.assets)
     .flatMap((asset) => [asset, asset.small].filter(Boolean)).map((asset) => [site.basePath.slice(1) + asset.src, asset]));
@@ -65,8 +65,10 @@ export async function validateOutput({ site, files, mode, now }) {
     }
   }
 
-  const css = String(files.get(assetPrefix + 'css/styles.css'));
-  check(css.includes('prefers-reduced-motion') && css.includes('forced-colors'), 'Accessibility media queries are missing.');
+  for (const name of ['css/styles.css', studyPage.path + 'styles.css']) {
+    const css = String(files.get(assetPrefix + name));
+    check(css.includes('prefers-reduced-motion') && css.includes('forced-colors'), 'Accessibility media queries are missing: ' + name);
+  }
   const legacy = JSON.parse(fs.readFileSync(path.join(root, 'firebase.json'), 'utf8'));
   const rc = JSON.parse(fs.readFileSync(path.join(root, '.firebaserc'), 'utf8'));
   check(legacy.hosting?.public === 'public' && legacy.hosting.ignore?.includes('assets/infographics/source-package/**') &&
@@ -80,8 +82,9 @@ export async function validateOutput({ site, files, mode, now }) {
     const source = files.get(assetPrefix + name);
     check(typeof source === 'string', 'Missing generated page: ' + name);
     if (!source) continue;
-    const landing = name === 'index.html';
-    const expectedUrl = publicUrl + (landing ? '' : name);
+    const study = name === studyPage.filename;
+    const landing = name === 'index.html' || study;
+    const expectedUrl = publicUrl + (study ? studyPage.path : landing ? '' : name);
     const expectedRobots = landing && mode === 'release' ? 'index, follow' : 'noindex, follow';
     const meta = (key, field = 'name') => tags(source, 'meta').find((tag) => attr(tag, field) === key);
     const canonical = tags(source, 'link').find((tag) => attr(tag, 'rel') === 'canonical');
@@ -107,7 +110,7 @@ export async function validateOutput({ site, files, mode, now }) {
       for (const ref of [src, href].filter(Boolean)) {
         if (ref.startsWith('#')) check(ids.includes(ref.slice(1)), 'Unknown anchor ' + ref + ' in ' + name);
         else if (ref === expectedUrl || ref === site.origin + '/' || ref === site.operator?.contactUrl || configuredActions.includes(ref)) continue;
-        else check(ref === site.basePath || (ref.startsWith(site.basePath) && files.has(ref.slice(1))),
+        else check(ref === site.basePath || ref === forward(studyPage.path) || (ref.startsWith(site.basePath) && files.has(ref.slice(1))),
           'Broken or unapproved URL: ' + name + ' ' + ref);
       }
     }
@@ -134,10 +137,29 @@ export async function validateOutput({ site, files, mode, now }) {
     check(landing ? eager.length === 1 && attr(eager[0], 'fetchpriority') === 'high' : !eager.length, 'Unexpected image loading priority: ' + name);
     check(!source.includes('script7.js') && !source.includes('googletagmanager') && !source.includes('analytics-event.schema'), 'Competing analytics script: ' + name);
     if (!landing) continue;
+    const relatedPath = study ? site.basePath : forward(studyPage.path);
+    const main = source.match(/<main\b[\s\S]*?<\/main>/)?.[0] ?? '';
+    const related = tags(study ? source : main, 'a').find((tag) =>
+      attr(tag, 'href') === relatedPath && (!study || attr(tag, 'class') === 'study-business-link'));
+    check(related && !attr(related, 'rel')?.split(/\s+/).includes('nofollow'), 'Missing crawlable link to the other LP: ' + name);
     for (const target of [...source.matchAll(/aria-labelledby="([^"]+)"/g)].flatMap(([, value]) => value.split(' '))) {
       check(ids.includes(target), 'Unlabelled section: ' + target);
     }
     const ctas = tags(source, 'a').filter((tag) => attr(tag, 'data-cta'));
+    check(!tags(source, 'p|button|span').some((tag) => attr(tag, 'data-cta')), 'A disabled or non-link CTA is tracked.');
+    if (study) {
+      const href = actionHref(site, 'registration', next);
+      check(ctas.length === (href ? 2 : 0), 'Individual LP needs the current registration action in the hero and guide.');
+      if (href) for (const location of ['hero', 'guide']) {
+        const anchor = ctas.find((tag) => attr(tag, 'data-cta-loc') === location);
+        check(anchor && attr(anchor, 'href') === href && attr(anchor, 'data-occurrence-id') === next.id &&
+          attr(anchor, 'data-target-type') === 'lecture_registration' && attr(anchor, 'data-cta') === studyPage.registrationId &&
+          attr(anchor, 'data-lp-slug') === studyPage.slug, 'Individual registration contract mismatch: ' + location);
+      }
+      check(source.includes('<script type="module" src="' + forward('js/app.js') + '"></script>'),
+        'Individual LP needs the shared Tokyo date handling.');
+      continue;
+    }
     for (const kind of ['consultation', 'registration']) {
       const { id } = site.actions[kind];
       const href = actionHref(site, kind, next);
@@ -149,13 +171,14 @@ export async function validateOutput({ site, files, mode, now }) {
         check(anchor && attr(anchor, 'href') === href && (kind === 'consultation' || attr(anchor, 'data-occurrence-id') === next.id), 'CTA target mismatch: ' + location);
       }
     }
-    check(!tags(source, 'p|button|span').some((tag) => attr(tag, 'data-cta')), 'A disabled or non-link CTA is tracked.');
     const details = [...source.matchAll(/<details>\s*<summary>([^<]+)<\/summary>\s*<p>[\s\S]+?<\/p>\s*<\/details>/g)];
     check(details.length > 0 && details.length === tags(source, 'details').length, 'FAQ needs discoverable summaries and answers.');
   }
 
   const sitemap = files.get(assetPrefix + 'sitemap.xml');
-  check(mode === 'review' ? !sitemap : Boolean(sitemap?.includes('<loc>' + publicUrl + '</loc>')), 'Sitemap does not match the mode.');
+  const locations = Array.from((sitemap ?? '').matchAll(/<loc>([^<]+)<\/loc>/g), ([, url]) => url);
+  check(mode === 'review' ? !sitemap : locations.length === 2 &&
+    locations.includes(publicUrl) && locations.includes(publicUrl + studyPage.path), 'Sitemap must list both canonical LPs in release mode only.');
   const config = String(files.get(assetPrefix + 'js/config.js'));
   check(mode === 'release' || config.includes('"measurementId":null'), 'Review enables analytics.');
   if (issues.length) throw new Error(issues.join('\n'));
