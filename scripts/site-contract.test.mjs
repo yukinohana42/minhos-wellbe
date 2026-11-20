@@ -101,6 +101,7 @@ test('release uses enabled links and approved material only, independently of re
   assert.match(index, /data-cta="wellbe_next_register"[^>]+data-occurrence-id="clinical-reasoning-intro"/);
   assert.equal((index.match(/data-cta="wellbe_consult"/g) || []).length, 3);
   assert.doesNotMatch(index, /draft-quote/);
+  assert.doesNotMatch(index, /^[ \t]+$/m);
   assert.match(release.files.get('wellbe/sitemap.xml'), /https:\/\/minhos-management.jp\/wellbe\//);
   const tracked = structuredClone(site);
   tracked.voices.push(draftQuote);
