@@ -185,6 +185,30 @@
       "approved": true,
       "alt": "訪問後、看護師がメモを見ながら電話で報告する。"
     },
+    "wellbe-staff-photo": {
+      "src": "assets/photos/wellbe-staff-1280.webp",
+      "width": 1280,
+      "height": 855,
+      "small": {
+        "src": "assets/photos/wellbe-staff-768.webp",
+        "width": 768,
+        "height": 513
+      },
+      "approved": true,
+      "alt": "ノートパソコンを一緒に見るWell beのスタッフ2人。"
+    },
+    "wellbe-visit-photo": {
+      "src": "assets/photos/wellbe-visit-1280.webp",
+      "width": 1280,
+      "height": 960,
+      "small": {
+        "src": "assets/photos/wellbe-visit-768.webp",
+        "width": 768,
+        "height": 576
+      },
+      "approved": true,
+      "alt": "屋外で、車いすの利用者さんのそばにしゃがむWell beのスタッフ。"
+    },
     "ito": {
       "src": "assets/photos/creator-ito-kenta.webp",
       "width": 439,
