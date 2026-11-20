@@ -19,7 +19,8 @@ const fill = (name, slots) => fs.readFileSync(safePath(root, 'src/pages/' + name
   .replace(/\{\{([A-Z_]+)\}\}/g, (_, key) => {
     if (!Object.hasOwn(slots, key)) throw new Error('Missing template value: ' + key);
     return slots[key];
-  });
+  })
+  .replace(/^[ \t]+(?=\r?$)/gm, '');
 
 function dateParts(session) {
   const [year, month, day] = session.date.split('-').map(Number);
