@@ -51,7 +51,7 @@
       "number": 1,
       "confirmedOn": "2026-11-20",
       "public": true,
-      "summary": "浮腫の基本と観察から、医師への報告の仕方までを取り上げました。"
+      "summary": "「最近、足のむくみが気になって」。訪問先でそう相談された場面から、いつから、どこに変化が出ているかを整理。どんな状態が考えられるか、連絡を急ぐか、医師や管理者に何を伝えるかまでを学びました。"
     },
     {
       "id": "clinical-reasoning-intro",
@@ -65,7 +65,38 @@
       "summary": null
     }
   ],
-  "voices": [],
+  "voices": [
+    {
+      "id": "edema-urgency",
+      "occurrenceId": "edema-first",
+      "quote": "よく見かける浮腫、されど浮腫。急いで対応が必要かどうか、見分ける知識、アセスメント力が深まりました！",
+      "approved": true
+    },
+    {
+      "id": "edema-report",
+      "occurrenceId": "edema-first",
+      "quote": "浮腫の基本的な所から、それを応用した先生への報告方法まで知れた。",
+      "approved": true
+    },
+    {
+      "id": "edema-dialogue",
+      "occurrenceId": "edema-first",
+      "quote": "講師の先生と伊藤さんが、実際の現場で直面している課題について、その場で意見を交わしながら議論を深めていくスタイルが非常に印象的で、大変勉強になりました。",
+      "approved": true
+    },
+    {
+      "id": "edema-flowchart",
+      "occurrenceId": "edema-first",
+      "quote": "フローチャートがとても分かりやすかった！",
+      "approved": true
+    },
+    {
+      "id": "edema-atmosphere",
+      "occurrenceId": "edema-first",
+      "quote": "リラックスした雰囲気で進行してくださるので、参加しやすかったです。",
+      "approved": true
+    }
+  ],
   "hosts": [
     {
       "id": "ito-kenta",

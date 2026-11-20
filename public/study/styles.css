@@ -276,40 +276,51 @@
 .study-learning {
   display: grid;
   align-items: start;
-  gap: clamp(2rem, 6vw, 6rem);
+  gap: clamp(1.15rem, 4vw, 2rem);
   padding-block: var(--study-space);
 }
 
-.study-lessons {
-  margin-block-start: clamp(1.25rem, 3vw, 2.75rem);
+.study-learning-lead {
+  max-inline-size: 33em;
+  margin-block-start: clamp(.85rem, 2vw, 1.5rem);
 }
 
-.study-lessons > div {
+.study-learning-question {
+  color: var(--navy);
+  font-weight: 700;
+}
+
+.study-learning-lead > p + p {
+  margin-block-start: .35rem;
+}
+
+.study-learning .learning-flow {
+  margin: clamp(1.25rem, 3vw, 2.2rem) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.study-learning .learning-flow > li {
   display: grid;
   gap: 0.25rem;
   padding-block: clamp(0.95rem, 2vw, 1.35rem);
   border-block-start: 1px solid var(--study-rule);
 }
 
-.study-lessons dt {
+.study-learning .learning-assessment h3 {
+  border-inline-start: 3px solid var(--orange);
+  padding-inline-start: .65rem;
+}
+
+.study-learning .learning-flow h3 {
   color: var(--blue);
   font-size: clamp(1.025rem, 1.6vw, 1.2rem);
   font-weight: 700;
 }
 
-.study-lessons dd {
-  max-width: 32em;
+.study-learning .learning-flow p {
+  max-inline-size: 32em;
   font-size: clamp(1rem, 1.5vw, 1.0625rem);
-}
-
-.study-learning-art {
-  display: grid;
-  gap: clamp(0.875rem, 2.25vw, 2rem);
-}
-
-.study-report-art {
-  width: 77%;
-  margin-inline-start: auto;
 }
 
 .study-history {
@@ -363,14 +374,31 @@
 
 .study-page .voices-layout {
   display: grid;
-  gap: 1.25rem;
-  margin-block-start: 1rem;
+  gap: clamp(1rem, 3.75vw, 3.5rem);
+  margin-block-start: clamp(1.15rem, 2.4vw, 2rem);
 }
 
-.study-page blockquote {
-  margin-block-end: 0.65rem;
-  padding-inline-start: 1rem;
-  border-inline-start: 2px solid var(--blue);
+.study-page .voices-inner > h2 {
+  text-wrap: balance;
+}
+
+.study-page .quote-feature {
+  display: grid;
+  align-content: center;
+  padding: clamp(1.1rem, 3vw, 2.7rem);
+  border-block-start: 3px solid var(--blue);
+  background: var(--study-paper);
+  color: var(--navy);
+  font: 700 clamp(1.125rem, 1.65vw, 1.5rem)/1.85 var(--serif);
+}
+
+.study-page .quote-list {
+  border-block-start: 1px solid var(--study-rule);
+}
+
+.study-page .quote-short {
+  padding-block: .9rem;
+  border-block-end: 1px solid var(--study-rule);
 }
 
 .study-aspiration {
@@ -500,6 +528,15 @@
 
   .study-learning {
     grid-template-columns: minmax(0, 0.83fr) minmax(0, 1.17fr);
+    column-gap: clamp(2rem, 6vw, 6rem);
+  }
+
+  .study-learning-art {
+    align-self: center;
+  }
+
+  .study-page .voices-layout {
+    grid-template-columns: minmax(0, .87fr) minmax(0, 1.13fr);
   }
 }
 

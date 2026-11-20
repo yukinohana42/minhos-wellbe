@@ -248,20 +248,33 @@ a, button, summary { -webkit-tap-highlight-color: #3253a426; }
 
 .learning-spread {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
-  align-items: start;
-  gap: clamp(1.75rem, 6vw, 6.5rem);
+  gap: clamp(1.15rem, 2.8vw, 2.65rem);
 }
 
-.learning-scene img { inline-size: 100%; background: var(--paper); }
-.learning-scene-report { margin-block-start: clamp(2rem, 6vw, 6rem); }
-.learning-scene figcaption {
-  border-block-start: 1px solid var(--line);
-  padding-block-start: .9rem;
-  margin-block-start: 1.15rem;
+.learning-spread .learning-flow {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: inherit;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
-.learning-scene h3 { font-size: clamp(1.15rem, 2.15vw, 1.55rem); }
-.learning-scene figcaption p { max-inline-size: 27rem; margin-block-start: .5rem; color: var(--muted); }
+
+.learning-flow > li {
+  padding-block-start: .9rem;
+  border-block-start: 2px solid var(--blue);
+}
+.learning-flow > .learning-assessment { border-color: var(--orange); }
+.learning-flow h3 { font: 600 clamp(1.27rem, 2.1vw, 1.85rem)/1.35 var(--serif); }
+.learning-flow p { margin-block-start: .5rem; color: var(--muted); }
+
+.learning-scenes {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr);
+  gap: inherit;
+  align-items: end;
+}
+.learning-scenes img { inline-size: 100%; background: var(--paper); }
 
 .education-band { background: var(--subtle); }
 .education-spread {
@@ -302,6 +315,8 @@ a, button, summary { -webkit-tap-highlight-color: #3253a426; }
 }
 .quote-feature {
   position: relative;
+  display: grid;
+  align-content: center;
   padding: clamp(2.65rem, 5vw, 4.5rem) clamp(1.25rem, 3.35vw, 3rem) clamp(1.5rem, 3vw, 3rem);
   background: var(--blue);
   color: var(--white);
@@ -486,8 +501,10 @@ a, button, summary { -webkit-tap-highlight-color: #3253a426; }
   .next-action { grid-column: 1 / -1; }
   .header-inner { min-block-size: 4.5rem; row-gap: .3rem; }
   .header-nav .header-detail { display: none; }
-  .section-intro, .learning-spread, .voices-layout, .consult-inner, .footer-inner { grid-template-columns: 1fr; }
-  .learning-scene-report { margin-block-start: .45rem; }
+  .section-intro, .voices-layout, .consult-inner, .footer-inner { grid-template-columns: 1fr; }
+  .learning-spread .learning-flow { grid-template-columns: minmax(0, 1fr); }
+  .learning-flow > li { padding: .1rem 0 .15rem .95rem; border-block-start: 0; border-inline-start: 2px solid var(--blue); }
+  .learning-scenes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .history-row { grid-template-columns: 1fr; gap: .55rem; }
   .history-date { grid-auto-flow: column; justify-content: start; gap: .6rem; }
   .footer-links { justify-content: flex-start; }

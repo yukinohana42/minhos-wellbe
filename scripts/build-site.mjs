@@ -169,7 +169,7 @@ function testimonials(held, voices) {
     const excerpts = voices.filter((voice) => voice.occurrenceId === session.id);
     if (!excerpts.length) return [];
     const [feature, ...others] = excerpts;
-    const title = (session.number ? '第' + session.number + '回 ' : '') + '「' + session.title + '」に参加した方の声';
+    const title = (session.number ? '第' + session.number + '回' : '') + '「' + session.title + '」に参加した方の声';
     const quote = (item, className) => '<blockquote class="' + className + '"><p>' + html(item.quote) + '</p></blockquote>';
     return ['<section class="voices-section" aria-labelledby="voices-' + session.id + '"><div class="shell voices-inner">' +
       '<h2 id="voices-' + session.id + '">' + html(title) + '</h2>' +
@@ -268,6 +268,12 @@ export function renderSite(site, { mode = 'review', now = new Date(), reviewVoic
   };
   const previewImage = site.assets['team-live'];
   const leadLines = site.description.split('\n');
+  const learningFlow = fill('learning-flow.html', {}).trim();
+  const businessVoices = [...site.voices];
+  if (mode === 'review') {
+    const approvedIds = new Set(site.voices.map(({ id }) => id));
+    businessVoices.push(...reviewVoices.filter(({ id }) => !approvedIds.has(id)));
+  }
   put('index.html', fill('index.html', {
     ...common,
     HEAD: buildHead(site, 'index.html', site.title, site.metaDescription ?? leadLines.join(' '), previewImage, mode),
@@ -279,8 +285,9 @@ export function renderSite(site, { mode = 'review', now = new Date(), reviewVoic
       '(min-width: 1276px) 670px, (min-width: 860px) 54vw, (min-width: 700px) 44vw, calc(100vw - 40px)',
       'Well beの事業所で、画面を確認するスタッフ'),
     NEXT_SESSION: nextSession(site, sessions),
-    HOME_IMAGE: image('home-listening', { sizes: '(min-width: 1276px) 630px, (min-width: 700px) 49vw, calc(100vw - 40px)' }),
-    REPORT_IMAGE: image('physician-report', { sizes: '(min-width: 1276px) 510px, (min-width: 700px) 43vw, calc(100vw - 40px)' }),
+    LEARNING_FLOW: learningFlow,
+    HOME_IMAGE: image('home-listening', { sizes: '(min-width: 1376px) 635px, (min-width: 700px) 47vw, 44vw' }),
+    REPORT_IMAGE: image('physician-report', { sizes: '(min-width: 1376px) 541px, (min-width: 700px) 40vw, 44vw' }),
     EDUCATION_IMAGE: site.education.status === 'available'
       ? image(site.education.materialAsset)
       : image('new-staff', { sizes: '(min-width: 1276px) 600px, (min-width: 860px) 50vw, calc(100vw - 40px)' }),
@@ -288,7 +295,7 @@ export function renderSite(site, { mode = 'review', now = new Date(), reviewVoic
     EDUCATION_DESCRIPTION: html(site.education.description),
     CONSULT_EDUCATION: actions(site, 'consultation', 'education'),
     PAST_SESSIONS: pastSessions(sessions.held),
-    PARTICIPANT_VOICES: testimonials(sessions.held, [...site.voices, ...(mode === 'review' ? reviewVoices : [])]),
+    PARTICIPANT_VOICES: testimonials(sessions.held, businessVoices),
     HOSTS: hosts,
     FAQ_MATERIAL: site.education.status === 'available'
       ? '事業所での教育用教材については、導入相談の際にご案内します。'
@@ -306,8 +313,8 @@ export function renderSite(site, { mode = 'review', now = new Date(), reviewVoic
     HERO_IMAGE: heroImage('study-home-visit', 'wellbe-visit-photo',
       '(min-width: 1380px) 650px, (min-width: 900px) 48vw, calc(100vw - 36px)',
       'Well beの訪問看護のひとコマ'),
+    LEARNING_FLOW: learningFlow,
     ONLINE_IMAGE: image('study-online', { sizes: '(min-width: 1380px) 640px, (min-width: 900px) 49vw, calc(100vw - 36px)' }),
-    REPORT_IMAGE: image('study-phone-report', { sizes: '(min-width: 1380px) 470px, (min-width: 900px) 36vw, 72vw' }),
     REGISTER_HERO: actions(site, 'registration', 'hero', sessions.next, true),
     REGISTER_GUIDE: actions(site, 'registration', 'guide', sessions.next, true),
     NEXT_LABEL: sessions.next ? 'next-heading' : 'next-fallback-heading',
